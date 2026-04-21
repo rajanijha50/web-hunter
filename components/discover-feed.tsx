@@ -1,16 +1,57 @@
 "use client";
 
-import { TOOLS, CATEGORIES, type Tool } from "@/lib/data";
+import { CATEGORIES, type Tool } from "@/lib/data";
 import { ToolCard } from "@/components/tool-card";
 import { Button } from "@/components/ui/button";
-import { History, Heart, Calendar } from "lucide-react";
-import { useState } from "react";
+import { History, Heart, Calendar, Loader2 } from "lucide-react";
+import { useState, useEffect } from "react";
 import { Dialog } from "@/components/ui/dialog";
 import { ToolModal } from "@/components/tool-modal";
 
-export function DiscoverFeed() {
-  const [activeCategory, setActiveCategory] = useState("All AI");
+import { useDiscoverQuery } from "@/hooks/use-discover-query";
+import { PaginationControls } from "@/components/pagination-controls";
+import { Suspense } from "react";
+
+const PAGE_SIZE = 30;
+
+function DiscoverFeedContent() {
+  const { category: activeCategory, page, setQuery } = useDiscoverQuery();
   const [selectedTool, setSelectedTool] = useState<Tool | null>(null);
+  const [tools, setTools] = useState<Tool[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchTools = async () => {
+      try {
+        setIsLoading(true);
+        const response = await fetch("/api/websites");
+        const json = await response.json();
+        if (json.success) {
+          setTools(json.data);
+        }
+      } catch (error) {
+        console.error("Failed to fetch tools:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchTools();
+  }, []);
+
+  const filteredTools = tools.filter(t => 
+    activeCategory === "All AI" || 
+    t.tags.some(tag => tag.toLowerCase() === activeCategory.toLowerCase())
+  );
+
+  // Pagination logic
+  const totalTools = filteredTools.length;
+  const totalPages = Math.ceil(totalTools / PAGE_SIZE);
+  
+  // Ensure we don't exceed max pages if filters change
+  const currentPage = Math.min(page, totalPages || 1);
+  
+  const startIndex = (currentPage - 1) * PAGE_SIZE;
+  const paginatedTools = filteredTools.slice(startIndex, startIndex + PAGE_SIZE);
   
   return (
     <div className="space-y-12">
@@ -45,7 +86,7 @@ export function DiscoverFeed() {
             <div>
                <div className="flex items-center gap-3 mb-2">
                  <span className="bg-[#fbbf24] text-[#78350f] text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded-sm">Top Category</span>
-                 <span className="text-white/70 text-sm font-medium">847 tools curated</span>
+                 <span className="text-white/70 text-sm font-medium">{tools.length} tools curated</span>
                </div>
                <h2 className="text-4xl md:text-6xl font-extrabold text-white mb-4 tracking-tighter">AI Tools</h2>
                <p className="text-white/80 text-lg max-w-2xl leading-relaxed">
@@ -59,7 +100,7 @@ export function DiscoverFeed() {
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b pb-4">
           <div className="flex items-baseline gap-3">
              <h2 className="text-2xl md:text-3xl font-extrabold tracking-tight">Discover</h2>
-             <span className="text-muted-foreground font-medium text-lg">(3,241 tools)</span>
+             <span className="text-muted-foreground font-medium text-lg">({totalTools} total)</span>
           </div>
           <div className="flex items-center gap-2 text-sm font-medium bg-muted/50 p-1.5 rounded-xl border border-border/50 shadow-inner">
              <button className="px-4 py-1.5 bg-background shadow-sm rounded-lg text-foreground font-semibold">Popular</button>
@@ -73,7 +114,7 @@ export function DiscoverFeed() {
           {CATEGORIES.map(cat => (
             <button 
               key={cat}
-              onClick={() => setActiveCategory(cat)}
+              onClick={() => setQuery({ category: cat })}
               className={`whitespace-nowrap px-6 py-2.5 rounded-full text-sm font-bold transition-all ${
                 activeCategory === cat 
                   ? "bg-[#0d1117] text-white shadow-md scale-105" 
@@ -86,24 +127,38 @@ export function DiscoverFeed() {
         </div>
 
         {/* Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 gap-y-10">
-          {TOOLS.filter(t => activeCategory === "All AI" || t.category.includes(activeCategory.split(" ")[0])).map(tool => (
-            <ToolCard 
-              key={tool.id} 
-              tool={tool} 
-              onClick={() => setSelectedTool(tool)}
+        {isLoading ? (
+          <div className="flex flex-col items-center justify-center py-24 gap-4">
+            <Loader2 className="h-12 w-12 animate-spin text-primary opacity-20" />
+            <span className="text-sm font-medium text-muted-foreground animate-pulse">Hunting for best websites...</span>
+          </div>
+        ) : paginatedTools.length > 0 ? (
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 gap-y-10">
+              {paginatedTools.map(tool => (
+                <ToolCard 
+                  key={tool._id} 
+                  tool={tool} 
+                  onClick={() => setSelectedTool(tool)}
+                />
+              ))}
+            </div>
+            
+            <PaginationControls 
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={(p) => setQuery({ page: p })}
             />
-          ))}
-        </div>
-        
-        {/* Loading Spinner for infinite scroll illusion */}
-        <div className="flex flex-col items-center justify-center pt-16 pb-8 gap-4">
-          <svg className="animate-spin h-10 w-10 text-primary opacity-50" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-          </svg>
-          <span className="text-xs font-bold tracking-widest text-muted-foreground uppercase">Loading more tools...</span>
-        </div>
+          </>
+        ) : (
+          <div className="flex flex-col items-center justify-center py-24 text-center">
+             <div className="h-20 w-20 rounded-full bg-muted flex items-center justify-center mb-4">
+                <History className="h-10 w-10 text-muted-foreground opacity-20" />
+             </div>
+             <h3 className="text-xl font-bold">No websites found</h3>
+             <p className="text-muted-foreground">Try a different category or check back later.</p>
+          </div>
+        )}
       </div>
 
       {/* Detail Modal Overlay */}
@@ -113,3 +168,12 @@ export function DiscoverFeed() {
     </div>
   );
 }
+
+export function DiscoverFeed() {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center py-24"><Loader2 className="h-12 w-12 animate-spin text-primary opacity-20" /></div>}>
+      <DiscoverFeedContent />
+    </Suspense>
+  );
+}
+

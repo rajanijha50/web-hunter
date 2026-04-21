@@ -25,7 +25,7 @@ export function ToolModal({ tool }: ToolModalProps) {
             <div>
               <h2 className="text-3xl font-bold tracking-tight text-foreground">{tool.name}</h2>
               <div className="flex items-center gap-2 mt-2">
-                <Badge variant="secondary" className="bg-background text-[10px] py-1">{tool.category}</Badge>
+                <Badge variant="secondary" className="bg-background text-[10px] py-1">{tool.tags[0] || "General"}</Badge>
                 {tool.isPremium && <Badge variant="premium" className="text-[10px] py-1 text-primary">AI ASSISTED</Badge>}
                 <Badge variant="outline" className="text-[10px] py-1 bg-background">BROWSER-BASED</Badge>
               </div>
@@ -34,7 +34,7 @@ export function ToolModal({ tool }: ToolModalProps) {
           
           <div className="relative aspect-[4/3] w-full rounded-2xl overflow-hidden border shadow-lg bg-black">
             <Image
-              src={`https://picsum.photos/seed/${tool.imageSeed}-app/1200/900`}
+              src={`https://picsum.photos/seed/${tool.name}-app/1200/900`}
               alt={`${tool.name} Interface`}
               fill
               className="object-cover"
@@ -51,7 +51,10 @@ export function ToolModal({ tool }: ToolModalProps) {
           </div>
           
           <div className="mt-8 flex flex-col sm:flex-row items-center gap-4 border-t pt-8 pb-4">
-             <Button className="w-full sm:w-auto h-12 px-8 text-base font-semibold gap-2 shadow-md">
+             <Button 
+               className="w-full sm:w-auto h-12 px-8 text-base font-semibold gap-2 shadow-md"
+               onClick={() => window.open(tool.url, "_blank")}
+             >
                Visit Site
                <ExternalLink className="h-4 w-4" />
              </Button>
@@ -70,46 +73,28 @@ export function ToolModal({ tool }: ToolModalProps) {
           <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-4 border-b pb-2">Details</h4>
           <dl className="space-y-4 text-sm">
             <div className="flex justify-between items-center">
-              <dt className="text-muted-foreground">Developer</dt>
+              <dt className="text-muted-foreground">URL</dt>
               <dd className="font-semibold text-foreground flex items-center gap-1">
-                {tool.developer}
+                {new URL(tool.url).hostname}
                 <CheckCircle2 className="h-4 w-4 text-primary" />
               </dd>
             </div>
             <div className="flex justify-between items-center">
               <dt className="text-muted-foreground">Pricing</dt>
-              <dd className="font-medium text-foreground">{tool.priceType}</dd>
+              <dd className="font-medium text-foreground">Freemium</dd>
             </div>
             <div className="flex justify-between items-center">
-              <dt className="text-muted-foreground">Platform</dt>
-              <dd className="font-medium text-foreground">{tool.platform}</dd>
+              <dt className="text-muted-foreground">Likes</dt>
+              <dd className="font-medium text-foreground">{tool.likesCount}</dd>
             </div>
           </dl>
         </div>
 
         <div className="flex-1">
-          <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-4 border-b pb-2">Similar Tools</h4>
-          <div className="space-y-4">
-            {[1, 2].map((i) => (
-              <div key={i} className="flex items-center gap-4 group cursor-pointer p-2 rounded-xl transition-colors hover:bg-muted/50 -mx-2">
-                <div className="h-12 w-12 rounded-lg bg-black/5 overflow-hidden relative shadow-sm border shrink-0">
-                   <Image 
-                     src={`https://picsum.photos/seed/similar-${tool.id}-${i}/200/200`} 
-                     alt="Similar App" 
-                     fill 
-                     className="object-cover group-hover:scale-110 transition-transform" 
-                     referrerPolicy="no-referrer"
-                   />
-                </div>
-                <div>
-                  <h5 className="text-sm font-bold text-foreground group-hover:text-primary transition-colors">
-                    {i === 1 ? "VectorX" : "FlowGen"}
-                  </h5>
-                  <p className="text-xs text-muted-foreground">
-                    {i === 1 ? "AI Illustration" : "Logic Mapping"}
-                  </p>
-                </div>
-              </div>
+          <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-4 border-b pb-2">Tags</h4>
+          <div className="flex flex-wrap gap-2">
+            {tool.tags.map(tag => (
+              <Badge key={tag} variant="outline" className="text-[10px]">{tag}</Badge>
             ))}
           </div>
         </div>
