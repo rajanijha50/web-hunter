@@ -1,6 +1,6 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
-import { X } from "lucide-react";
+import { LuX } from "react-icons/lu";
 
 interface DialogProps {
   open: boolean;
@@ -38,7 +38,7 @@ export function Dialog({ open, onOpenChange, children }: DialogProps) {
           onClick={() => onOpenChange(false)}
           className="absolute right-4 top-4 z-50 rounded-full bg-background/50 p-2 text-foreground/60 opacity-70 ring-offset-background transition-opacity hover:opacity-100 hover:bg-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground"
         >
-          <X className="h-4 w-4" />
+          <LuX className="h-4 w-4" />
           <span className="sr-only">Close</span>
         </button>
         {children}

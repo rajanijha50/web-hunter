@@ -2,7 +2,7 @@ import Image from "next/image";
 import { type Tool } from "@/lib/data";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ExternalLink, Bookmark, CheckCircle2, Copy } from "lucide-react";
+import { LuExternalLink, LuBookmark, LuCircleCheck, LuCopy } from "react-icons/lu";
 
 interface ToolModalProps {
   tool: Tool;
@@ -56,10 +56,10 @@ export function ToolModal({ tool }: ToolModalProps) {
                onClick={() => window.open(tool.url, "_blank")}
              >
                Visit Site
-               <ExternalLink className="h-4 w-4" />
+               <LuExternalLink className="h-4 w-4" />
              </Button>
              <Button variant="secondary" className="w-full sm:w-auto h-12 px-6 gap-2 text-foreground font-medium bg-secondary/60 hover:bg-secondary">
-               <Bookmark className="h-4 w-4" />
+               <LuBookmark className="h-4 w-4" />
                Add to Collection
                <Badge variant="premium" className="ml-2 scale-90">PRO</Badge>
              </Button>
@@ -76,7 +76,7 @@ export function ToolModal({ tool }: ToolModalProps) {
               <dt className="text-muted-foreground">URL</dt>
               <dd className="font-semibold text-foreground flex items-center gap-1">
                 {new URL(tool.url).hostname}
-                <CheckCircle2 className="h-4 w-4 text-primary" />
+                <LuCircleCheck className="h-4 w-4 text-primary" />
               </dd>
             </div>
             <div className="flex justify-between items-center">
@@ -101,7 +101,7 @@ export function ToolModal({ tool }: ToolModalProps) {
 
         <div className="mt-8 p-6 rounded-2xl bg-primary text-primary-foreground relative overflow-hidden shadow-xl">
            <div className="absolute top-0 right-0 p-4 opacity-20">
-             <Bookmark className="h-24 w-24 -mr-8 -mt-8" />
+             <LuBookmark className="h-24 w-24 -mr-8 -mt-8" />
            </div>
            <h4 className="font-bold mb-2 text-white relative z-10">Want organized collections?</h4>
            <p className="text-xs text-white/80 mb-4 relative z-10 leading-relaxed">

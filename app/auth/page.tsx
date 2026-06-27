@@ -4,7 +4,7 @@ import { signIn } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { motion } from "framer-motion";
-import { Chrome, Search, ShieldCheck } from "lucide-react";
+import { LuChrome, LuSearch, LuShieldCheck } from "react-icons/lu";
 
 export default function LoginPage() {
   const handleSignIn = (provider: string) => {
@@ -26,7 +26,7 @@ export default function LoginPage() {
       >
         <div className="flex justify-center mb-8">
             <div className="p-3 bg-white/5 rounded-2xl border border-white/10 backdrop-blur-xl">
-                <Search className="w-10 h-10 text-blue-500" />
+                <LuSearch className="w-10 h-10 text-blue-500" />
             </div>
         </div>
 
@@ -62,7 +62,7 @@ export default function LoginPage() {
 
             <div className="pt-6 text-center">
                 <p className="text-xs text-zinc-500 flex items-center justify-center gap-1.5">
-                    <ShieldCheck className="w-3.5 h-3.5" />
+                    <LuShieldCheck className="w-3.5 h-3.5" />
                     Secure authentication via OAuth 2.0
                 </p>
             </div>

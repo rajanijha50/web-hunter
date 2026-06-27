@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Heart, Star, ExternalLink } from "lucide-react";
+import { LuHeart, LuStar, LuExternalLink } from "react-icons/lu";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { type Tool } from "@/lib/data";
@@ -29,7 +29,7 @@ export function ToolCard({ tool, onClick }: ToolCardProps) {
 
   return (
     <Card
-      className="group overflow-hidden transition-all hover:shadow-xl border-border bg-card cursor-pointer flex flex-col h-full rounded-2xl p-5"
+      className="group overflow-hidden transition-all hover:shadow-xl border-border bg-card cursor-pointer flex flex-col rounded-2xl p-5"
       onClick={onClick}
     >
       <div className="flex items-start justify-between mb-4">
@@ -50,7 +50,7 @@ export function ToolCard({ tool, onClick }: ToolCardProps) {
             <h3 className="text-xl font-bold tracking-tight text-foreground leading-tight group-hover:text-primary transition-colors">{tool.name}</h3>
             <div className="flex items-center gap-1.5 mt-1">
               <div className="flex items-center gap-1 text-[11px] font-bold text-foreground bg-secondary px-2 py-0.5 rounded-md">
-                <Star className="h-2.5 w-2.5 fill-[#eab308] text-[#eab308]" />
+                <LuStar className="h-2.5 w-2.5 fill-[#eab308] text-[#eab308]" />
                 <span>{(4.5 + (tool.name.length % 5) * 0.1).toFixed(1)}</span>
               </div>
               {tool.isPremium && (
@@ -67,7 +67,7 @@ export function ToolCard({ tool, onClick }: ToolCardProps) {
             e.stopPropagation();
           }}
         >
-          <Heart className="h-4 w-4" />
+          <LuHeart className="h-4 w-4" />
         </button>
       </div>
 
@@ -91,7 +91,7 @@ export function ToolCard({ tool, onClick }: ToolCardProps) {
 
       <div className="mt-auto flex items-center justify-between pt-4 border-t border-border">
         <div className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
-          <Heart className="h-3.5 w-3.5" />
+          <LuHeart className="h-3.5 w-3.5" />
           <span className="font-bold">{tool.likesCount}</span>
         </div>
 
@@ -104,7 +104,7 @@ export function ToolCard({ tool, onClick }: ToolCardProps) {
             onClick={(e) => e.stopPropagation()}
           >
             Visit
-            <ExternalLink className="ml-2 h-3.5 w-3.5" />
+            <LuExternalLink className="ml-2 h-3.5 w-3.5" />
           </a>
         </div>
       </div>

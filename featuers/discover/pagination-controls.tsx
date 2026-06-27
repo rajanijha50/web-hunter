@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "lucide-react";
+import { LuChevronLeft, LuChevronRight, LuChevronsLeft, LuChevronsRight } from "react-icons/lu";
 import { Button } from "@/components/ui/button";
 
 interface PaginationProps {
@@ -41,7 +41,7 @@ export function PaginationControls({ currentPage, totalPages, onPageChange }: Pa
           onClick={() => onPageChange(1)}
           disabled={currentPage === 1}
         >
-          <ChevronsLeft className="h-4 w-4" />
+          <LuChevronsLeft className="h-4 w-4" />
         </Button>
         <Button
           variant="outline"
@@ -50,7 +50,7 @@ export function PaginationControls({ currentPage, totalPages, onPageChange }: Pa
           onClick={() => onPageChange(currentPage - 1)}
           disabled={currentPage === 1}
         >
-          <ChevronLeft className="h-4 w-4" />
+          <LuChevronLeft className="h-4 w-4" />
         </Button>
       </div>
 
@@ -79,7 +79,7 @@ export function PaginationControls({ currentPage, totalPages, onPageChange }: Pa
           onClick={() => onPageChange(currentPage + 1)}
           disabled={currentPage === totalPages}
         >
-          <ChevronRight className="h-4 w-4" />
+          <LuChevronRight className="h-4 w-4" />
         </Button>
         <Button
           variant="outline"
@@ -88,7 +88,7 @@ export function PaginationControls({ currentPage, totalPages, onPageChange }: Pa
           onClick={() => onPageChange(totalPages)}
           disabled={currentPage === totalPages}
         >
-          <ChevronsRight className="h-4 w-4" />
+          <LuChevronsRight className="h-4 w-4" />
         </Button>
       </div>
     </div>
