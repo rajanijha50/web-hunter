@@ -1,47 +1,72 @@
 "use client";
 
-import { CATEGORIES, type Tool } from "@/lib/data";
+import { CATEGORIES } from "@/lib/data";
 import { Button } from "@/components/ui/button";
 import { LuHistory, LuHeart, LuCalendar, LuLoaderCircle } from "react-icons/lu";
-import { useState, useEffect } from "react";
-import { Dialog } from "@/components/ui/dialog";
-import { ToolModal } from "@/featuers/discover/tool-modal";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { ToolCard } from "@/featuers/discover/tool-card";
 
 import { useDiscoverQuery } from "@/hooks/use-discover-query";
 import { PaginationControls } from "@/featuers/discover/pagination-controls";
 import { Suspense } from "react";
+import { useWebStore } from "@/store/websiteStore";
+import { WebsiteType } from "@/types/website";
+import { useUser } from "@/store/userStore";
 
 const PAGE_SIZE = 30;
 
 function DiscoverFeedContent() {
-  const { category: activeCategory, page, setQuery } = useDiscoverQuery();
-  const [selectedTool, setSelectedTool] = useState<Tool | null>(null);
-  const [tools, setTools] = useState<Tool[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const { category: activeCategory, page, sortby, order, setQuery } = useDiscoverQuery();
+  const [selectedTool, setSelectedTool] = useState<WebsiteType | null>(null);
+  const categoriesRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    const fetchTools = async () => {
-      try {
-        setIsLoading(true);
-        const response = await fetch("/api/websites");
-        const json = await response.json();
-        if (json.success) {
-          setTools(json.data);
-        }
-      } catch (error) {
-        console.error("Failed to fetch tools:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchTools();
+  const handleCategoryWheel = useCallback((e: WheelEvent) => {
+    const el = categoriesRef.current;
+    if (!el) return;
+    // Only hijack when there is overflow to scroll horizontally
+    const hasHorizontalOverflow = el.scrollWidth > el.clientWidth;
+    if (!hasHorizontalOverflow) return;
+    e.preventDefault();
+    el.scrollLeft += e.deltaY || e.deltaX;
   }, []);
 
-  const filteredTools = tools.filter(
+  useEffect(() => {
+    const el = categoriesRef.current;
+    if (!el) return;
+    // passive: false is required so we can call preventDefault()
+    el.addEventListener("wheel", handleCategoryWheel, { passive: false });
+    return () => el.removeEventListener("wheel", handleCategoryWheel);
+  }, [handleCategoryWheel]);
+  const { websites, fetchWebsites, loading } = useWebStore();
+  const user = useUser((state) => state.user);
+  const [isLoading, setIsLoading] = useState(loading);
+  const [tools, setTools] = useState<WebsiteType[]>([]);
+
+  useEffect(() => {
+    fetchWebsites();
+  }, []);
+  
+  useEffect(() => {
+    setTools(websites);
+  }, [websites]);
+
+  const sortedTools = [...tools].sort((a, b) => {
+    switch (sortby) {
+      case "Latest":
+        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+      case "Oldest":
+        return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+      case "Popular":
+        return b.likesCount - a.likesCount;
+      default:
+        return 0;
+    }
+  });
+  
+  const filteredTools = sortedTools.filter(
     (t) =>
       activeCategory === "All AI" ||
-      t.tags.some((tag) => tag.toLowerCase() === activeCategory.toLowerCase()),
+      t.tags.some((tag) => tag.toLowerCase() === activeCategory.toLowerCase())
   );
 
   // Pagination logic
@@ -62,23 +87,23 @@ function DiscoverFeedContent() {
       {/* Welcome Banner */}
       <div>
         <h1 className="text-3xl md:text-5xl font-bold tracking-tight mb-6">
-          Good morning, Alex 👋
+          Good morning, {user?.name} 👋
         </h1>
 
         {/* Quick Filters */}
-        <div className="flex flex-wrap gap-3">
+        {/* <div className="flex flex-wrap gap-3">
           <Button
             variant="outline"
-            className="h-10 rounded-full px-5 text-sm font-medium gap-2 hover:bg-slate-50"
+            className="h-10 rounded-full px-5 text-sm font-medium gap-2 hover:bg-secondary"
           >
-            <LuHistory className="h-4 w-4 text-muted-foreground bg-slate-100 p-0.5 rounded-sm" />{" "}
+            <LuHistory />{" "}
             Recently Viewed
           </Button>
           <Button
             variant="outline"
-            className="h-10 rounded-full px-5 text-sm font-medium gap-2 hover:bg-slate-50"
+            className="h-10 rounded-full px-5 text-sm font-medium gap-2 hover:bg-secondary"
           >
-            <LuHeart className="h-4 w-4 text-destructive bg-red-50 p-0.5 rounded-sm" />{" "}
+            <LuHeart className="h-4 w-4 text-pink-600" />{" "}
             My Favorites
           </Button>
           <Button
@@ -87,7 +112,7 @@ function DiscoverFeedContent() {
           >
             <LuCalendar className="h-4 w-4" /> New This Week
           </Button>
-        </div>
+        </div> */}
       </div>
 
       {/* Featured Banner component representing the Top category "AI Tools" */}
@@ -137,7 +162,7 @@ function DiscoverFeedContent() {
               ({totalTools} total)
             </span>
           </div>
-          <div className="flex items-center gap-2 text-sm font-medium bg-muted/50 p-1.5 rounded-xl border border-border/50 shadow-inner">
+          {/* <div className="flex items-center gap-2 text-sm font-medium bg-muted/50 p-1.5 rounded-xl border border-border/50 shadow-inner">
             <button className="px-4 py-1.5 bg-background shadow-sm rounded-lg text-foreground font-semibold">
               Popular
             </button>
@@ -147,11 +172,11 @@ function DiscoverFeedContent() {
             <button className="px-4 py-1.5 text-muted-foreground hover:text-foreground transition-colors rounded-lg">
               Alpha
             </button>
-          </div>
+          </div> */}
         </div>
 
         {/* Categories */}
-        <div className="flex items-center gap-3 overflow-x-auto pb-4 scrollbar-none">
+        <div ref={categoriesRef} className="flex items-center gap-3 overflow-x-auto pb-4">
           {CATEGORIES.map((cat) => (
             <button
               key={cat}

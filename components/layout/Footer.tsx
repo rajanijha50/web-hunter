@@ -44,7 +44,7 @@ export default function Footer() {
               {
                 social.map((s) => {
                   return (
-                    <Link href={s.href} className="h-8 w-8 rounded-full bg-muted flex items-center justify-center hover:bg-accent cursor-pointer transition-colors">
+                    <Link key={s.name} href={s.href} className="h-8 w-8 rounded-full bg-muted flex items-center justify-center hover:bg-accent cursor-pointer transition-colors">
                       <span className="text-lg"><s.icon/></span>
                     </Link>
                   )

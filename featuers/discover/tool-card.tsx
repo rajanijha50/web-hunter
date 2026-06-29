@@ -4,10 +4,10 @@ import { useState } from "react";
 import { LuHeart, LuStar, LuExternalLink } from "react-icons/lu";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
-import { type Tool } from "@/lib/data";
+import { WebsiteType } from "@/types/website";
 
 interface ToolCardProps {
-  tool: Tool;
+  tool: WebsiteType;
   onClick?: () => void;
 }
 
@@ -29,12 +29,12 @@ export function ToolCard({ tool, onClick }: ToolCardProps) {
 
   return (
     <Card
-      className="group overflow-hidden transition-all hover:shadow-xl border-border bg-card cursor-pointer flex flex-col rounded-2xl p-5"
+      className="group overflow-hidden transition-all hover:shadow-xl border-border bg-card cursor-default flex flex-col rounded-2xl p-5"
       onClick={onClick}
     >
       <div className="flex items-start justify-between mb-4">
         <div className="flex items-center gap-4">
-          <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-primary/10 to-primary/5 border border-border flex items-center justify-center shrink-0 shadow-sm group-hover:scale-105 transition-transform overflow-hidden bg-background">
+          <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-primary to-white/80 border border-border flex items-center justify-center shrink-0 shadow-sm group-hover:scale-105 transition-transform overflow-hidden">
             {!imageError ? (
               <img 
                 src={faviconUrl} 

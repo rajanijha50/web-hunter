@@ -10,8 +10,10 @@ export function useDiscoverQuery() {
 
   const category = searchParams.get("category") || "All AI";
   const page = parseInt(searchParams.get("page") || "1", 10);
+  const sortby = searchParams.get("sortby") || "Latest";
+  const order = searchParams.get("order") || "desc";
 
-  const setQuery = useCallback((params: { category?: string; page?: number }) => {
+  const setQuery = useCallback((params: { category?: string; page?: number, sortby?: string, order?: string }) => {
     const current = new URLSearchParams(Array.from(searchParams.entries()));
 
     if (params.category !== undefined) {
@@ -32,6 +34,22 @@ export function useDiscoverQuery() {
       }
     }
 
+    if (params.sortby !== undefined) {
+      if (params.sortby === "Latest") {
+        current.delete("sortby");
+      } else {
+        current.set("sortby", params.sortby);
+      }
+    }
+
+    if (params.order !== undefined) {
+      if (params.order === "desc") {
+        current.delete("order");
+      } else {
+        current.set("order", params.order);
+      }
+    }
+
     const query = current.toString();
     const url = `${pathname}${query ? `?${query}` : ""}`;
     
@@ -41,6 +59,8 @@ export function useDiscoverQuery() {
   return {
     category,
     page,
+    sortby,
+    order,
     setQuery
   };
 }

@@ -1,11 +1,11 @@
 import Image from "next/image";
-import { type Tool } from "@/lib/data";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { LuExternalLink, LuBookmark, LuCircleCheck, LuCopy } from "react-icons/lu";
+import { WebsiteType } from "@/types/website";
 
 interface ToolModalProps {
-  tool: Tool;
+  tool: WebsiteType;
 }
 
 export function ToolModal({ tool }: ToolModalProps) {
