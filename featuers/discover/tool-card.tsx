@@ -29,7 +29,7 @@ export function ToolCard({ tool, onClick }: ToolCardProps) {
 
   return (
     <Card
-      className="group overflow-hidden transition-all hover:shadow-xl border-border bg-card cursor-default flex flex-col rounded-2xl p-5"
+      className="group overflow-hidden transition-all hover:shadow-xl border-border bg-card cursor-default flex flex-col rounded-2xl p-5 w-80 h-80"
       onClick={onClick}
     >
       <div className="flex items-start justify-between mb-4">
@@ -47,7 +47,7 @@ export function ToolCard({ tool, onClick }: ToolCardProps) {
             )}
           </div>
           <div>
-            <h3 className="text-xl font-bold tracking-tight text-foreground leading-tight group-hover:text-primary transition-colors">{tool.name}</h3>
+            <h3 className="text-xl font-bold tracking-tight text-foreground leading-tight group-hover:text-primary transition-colors line-clamp-1">{tool.name}</h3>
             <div className="flex items-center gap-1.5 mt-1">
               <div className="flex items-center gap-1 text-[11px] font-bold text-foreground bg-secondary px-2 py-0.5 rounded-md">
                 <LuStar className="h-2.5 w-2.5 fill-[#eab308] text-[#eab308]" />
@@ -76,7 +76,7 @@ export function ToolCard({ tool, onClick }: ToolCardProps) {
           {tool.description}
         </p>
 
-        <div className="flex flex-wrap gap-2 mb-6">
+        <div className="flex flex-wrap gap-2 mb-6 line-clamp-2">
           {tool.tags.map((tag, idx) => (
             <Badge 
               key={idx} 
@@ -96,7 +96,6 @@ export function ToolCard({ tool, onClick }: ToolCardProps) {
         </div>
 
         <div className="flex items-center gap-3">
-          <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-tighter">Free to Try</span>
           <a
             className="h-9 rounded-xl px-5 text-sm font-bold bg-primary text-primary-foreground hover:opacity-90 transition-all flex items-center justify-center shadow-md hover:shadow-lg active:scale-95"
             href={tool.url.startsWith('http') ? tool.url : `https://${tool.url}`}

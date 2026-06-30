@@ -202,7 +202,7 @@ function DiscoverFeedContent() {
           </div>
         ) : paginatedTools.length > 0 ? (
           <>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 gap-y-10">
+            <div className="flex flex-wrap justify-center items-center gap-8">
               {paginatedTools.map((tool) => (
                 <ToolCard
                   key={tool._id}
