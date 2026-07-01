@@ -1,9 +1,9 @@
 export interface UserType {
+    _id: string;
     name: string;
     email: string;
-    password?: string;
-    role: "user" | "admin";
     image?: string;
+    role: "user" | "admin";
     createdAt: Date;
     updatedAt: Date;
 }

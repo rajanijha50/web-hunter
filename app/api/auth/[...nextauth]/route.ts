@@ -2,7 +2,7 @@ import NextAuth, { NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import AzureADProvider from "next-auth/providers/azure-ad";
 import { connectDB } from "@/lib/db";
-import User from "@/models/User";
+import UserModel from "@/models/User";
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -22,11 +22,11 @@ export const authOptions: NextAuthOptions = {
       
       try {
         await connectDB();
-        const existingUser = await User.findOne({ email: user.email });
+        const existingUser = await UserModel.findOne({ email: user.email });
         
         if (!existingUser) {
           // New Registration
-          await User.create({
+          await UserModel.create({
             name: user.name || user.email.split('@')[0],
             email: user.email,
             image: user.image || "",
@@ -42,9 +42,9 @@ export const authOptions: NextAuthOptions = {
     async session({ session, token }) {
       if (session.user && session.user.email) {
         await connectDB();
-        const dbUser = await User.findOne({ email: session.user.email });
+        const dbUser = await UserModel.findOne({ email: session.user.email });
         if (dbUser) {
-          (session.user as any).id = dbUser._id.toString();
+          (session.user as any)._id = dbUser._id.toString();
           (session.user as any).role = dbUser.role;
         }
       }
@@ -52,8 +52,9 @@ export const authOptions: NextAuthOptions = {
     },
     async jwt({ token, user }) {
         // Initial sign in
+        // console.log("User from jwt: ", user);
         if (user) {
-            token.id = (user as any).id;
+            token._id = (user as any).id;
         }
         return token;
     }
