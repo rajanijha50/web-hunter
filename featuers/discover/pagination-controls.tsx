@@ -1,5 +1,4 @@
 "use client";
-
 import { LuChevronLeft, LuChevronRight, LuChevronsLeft, LuChevronsRight } from "react-icons/lu";
 import { Button } from "@/components/ui/button";
 
@@ -37,7 +36,7 @@ export function PaginationControls({ currentPage, totalPages, onPageChange }: Pa
         <Button
           variant="outline"
           size="icon"
-          className="h-9 w-9 rounded-xl transition-all hover:bg-slate-100 disabled:opacity-30"
+          className="h-9 w-9 rounded-xl transition-all hover:bg-primary/80 disabled:opacity-50"
           onClick={() => onPageChange(1)}
           disabled={currentPage === 1}
         >
@@ -46,7 +45,7 @@ export function PaginationControls({ currentPage, totalPages, onPageChange }: Pa
         <Button
           variant="outline"
           size="icon"
-          className="h-9 w-9 rounded-xl transition-all hover:bg-slate-100 disabled:opacity-30"
+          className="h-9 w-9 rounded-xl transition-all hover:bg-primary/80 disabled:opacity-50"
           onClick={() => onPageChange(currentPage - 1)}
           disabled={currentPage === 1}
         >
@@ -61,8 +60,8 @@ export function PaginationControls({ currentPage, totalPages, onPageChange }: Pa
             variant={num === currentPage ? "default" : "outline"}
             className={`h-9 w-9 rounded-xl font-bold text-sm transition-all duration-300 ${
               num === currentPage 
-                ? "bg-[#0d1117] text-white shadow-lg scale-110" 
-                : "hover:bg-slate-100 text-slate-600"
+                ? "bg-primary text-white shadow-lg scale-110" 
+                : "hover:bg-primary/80 text-muted-foreground"
             }`}
             onClick={() => onPageChange(num)}
           >
@@ -75,7 +74,7 @@ export function PaginationControls({ currentPage, totalPages, onPageChange }: Pa
         <Button
           variant="outline"
           size="icon"
-          className="h-9 w-9 rounded-xl transition-all hover:bg-slate-100 disabled:opacity-30"
+          className="h-9 w-9 rounded-xl transition-all hover:bg-primary/80 disabled:opacity-50"
           onClick={() => onPageChange(currentPage + 1)}
           disabled={currentPage === totalPages}
         >
@@ -84,7 +83,7 @@ export function PaginationControls({ currentPage, totalPages, onPageChange }: Pa
         <Button
           variant="outline"
           size="icon"
-          className="h-9 w-9 rounded-xl transition-all hover:bg-slate-100 disabled:opacity-30"
+          className="h-9 w-9 rounded-xl transition-all hover:bg-primary/80 disabled:opacity-30"
           onClick={() => onPageChange(totalPages)}
           disabled={currentPage === totalPages}
         >
