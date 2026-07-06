@@ -1,5 +1,4 @@
 "use client";
-
 import { useEffect, useState } from "react";
 import { LuHeart, LuStar, LuExternalLink, LuRotateCcw } from "react-icons/lu";
 import { Badge } from "@/components/ui/badge";
@@ -67,7 +66,7 @@ export function ToolCard({ tool, onClick }: ToolCardProps) {
   useEffect(() => {
     if (isFavorited) {
       const updatedWebsite = favorites.find((fav: any) => fav._id === tool._id);
-      setLikeCount(updatedWebsite?.likesCount);
+      setLikeCount(Math.max(updatedWebsite?.likesCount, LikeCount));
     }
   }, [favorites]);
 
@@ -86,12 +85,12 @@ export function ToolCard({ tool, onClick }: ToolCardProps) {
 
   return (
     <Card
-      className="group overflow-hidden transition-all hover:shadow-xl border-border bg-card cursor-default flex flex-col rounded-2xl p-5 w-80 h-80"
+      className="group overflow-hidden hover:shadow-xl border-border bg-card cursor-default flex flex-col rounded-2xl p-5 w-80 h-80 hover:border-primary transition-all duration-300 delay-100"
       onClick={onClick}
     >
       <div className="flex items-start justify-between mb-4">
         <div className="flex items-center gap-4">
-          <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-primary to-white/80 border border-border flex items-center justify-center shrink-0 shadow-sm group-hover:scale-105 transition-transform overflow-hidden">
+          <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-primary to-white/80 border border-border flex items-center justify-center shrink-0 shadow-sm group-hover:scale-105 transition-transform duration-150 delay-75 overflow-hidden">
             {!imageError ? (
               <img
                 src={faviconUrl}
@@ -106,7 +105,7 @@ export function ToolCard({ tool, onClick }: ToolCardProps) {
             )}
           </div>
           <div>
-            <h3 className="text-xl font-bold tracking-tight text-foreground leading-tight group-hover:text-primary transition-colors line-clamp-1">
+            <h3 className="text-xl font-bold tracking-tight text-foreground leading-tight transition-colors line-clamp-1">
               {tool.name}
             </h3>
             <div className="flex items-center gap-1.5 mt-1">
@@ -114,14 +113,7 @@ export function ToolCard({ tool, onClick }: ToolCardProps) {
                 <LuStar className="h-2.5 w-2.5 fill-[#eab308] text-[#eab308]" />
                 <span>{(4.5 + (tool.name.length % 5) * 0.1).toFixed(1)}</span>
               </div>
-              {tool.isPremium && (
-                <Badge
-                  variant="premium"
-                  className="text-[9px] h-4 tracking-tight px-1.5 bg-primary/10 text-primary border-none"
-                >
-                  PREMIUM
-                </Badge>
-              )}
+              
             </div>
           </div>
         </div>

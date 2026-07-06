@@ -1,117 +1,287 @@
-import Image from "next/image";
+"use client";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { LuExternalLink, LuBookmark, LuCircleCheck, LuCopy } from "react-icons/lu";
+import { LuLoaderCircle, LuSave, LuX, LuCheck } from "react-icons/lu";
 import { WebsiteType } from "@/types/website";
+import { CATEGORIES } from "@/lib/data";
+import { useUserStore } from "@/store/userStore";
 
 interface ToolModalProps {
   tool: WebsiteType;
+  onUpdate?: (updated: WebsiteType) => void;
 }
 
-export function ToolModal({ tool }: ToolModalProps) {
-  return (
-    <div className="flex flex-col md:flex-row w-full h-full max-h-[85vh] overflow-y-auto md:overflow-hidden">
-      {/* Visual Content (Left side on desktop) */}
-      <div className="w-full md:w-[65%] shrink-0 bg-muted/30 p-6 md:p-10 flex flex-col items-center justify-center border-b md:border-b-0 md:border-r relative overflow-y-auto">
-        <div className="w-full max-w-2xl">
-          <div className="flex items-center gap-4 mb-6">
-            <div className="h-16 w-16 rounded-2xl bg-card border shadow-sm flex items-center justify-center overflow-hidden relative shrink-0">
-               {/* Abstract placeholder logo matching industrial aesthetic */}
-               <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-primary/5" />
-               <div className="relative text-2xl font-bold font-serif text-primary">
-                 {tool.name.charAt(0)}
-               </div>
-            </div>
-            <div>
-              <h2 className="text-3xl font-bold tracking-tight text-foreground">{tool.name}</h2>
-              <div className="flex items-center gap-2 mt-2">
-                <Badge variant="secondary" className="bg-background text-[10px] py-1">{tool.tags[0] || "General"}</Badge>
-                {tool.isPremium && <Badge variant="premium" className="text-[10px] py-1 text-primary">AI ASSISTED</Badge>}
-                <Badge variant="outline" className="text-[10px] py-1 bg-background">BROWSER-BASED</Badge>
-              </div>
-            </div>
-          </div>
-          
-          <div className="relative aspect-[4/3] w-full rounded-2xl overflow-hidden border shadow-lg bg-black">
-            <Image
-              src={`https://picsum.photos/seed/${tool.name}-app/1200/900`}
-              alt={`${tool.name} Interface`}
-              fill
-              className="object-cover"
-              referrerPolicy="no-referrer"
-            />
-            {/* Simulating an industrial device frame */}
-            <div className="absolute inset-0 pointer-events-none border-[12px] border-zinc-900 rounded-2xl mix-blend-overlay opacity-80" />
-          </div>
+export function ToolModal({ tool, onUpdate }: ToolModalProps) {
+  const user = useUserStore((state) => state.user);
+  const isAdmin = user?.role === "admin";
 
-          <div className="mt-8">
-            <p className="text-lg text-muted-foreground leading-relaxed">
-              {tool.description}
-            </p>
-          </div>
-          
-          <div className="mt-8 flex flex-col sm:flex-row items-center gap-4 border-t pt-8 pb-4">
-             <Button 
-               className="w-full sm:w-auto h-12 px-8 text-base font-semibold gap-2 shadow-md"
-               onClick={() => window.open(tool.url, "_blank")}
-             >
-               Visit Site
-               <LuExternalLink className="h-4 w-4" />
-             </Button>
-             <Button variant="secondary" className="w-full sm:w-auto h-12 px-6 gap-2 text-foreground font-medium bg-secondary/60 hover:bg-secondary">
-               <LuBookmark className="h-4 w-4" />
-               Add to Collection
-               <Badge variant="premium" className="ml-2 scale-90">PRO</Badge>
-             </Button>
+  const [form, setForm] = useState({
+    name: tool.name,
+    url: tool.url,
+    description: tool.description,
+    tags: [...tool.tags],
+    isPremium: tool.isPremium,
+    likesCount: tool.likesCount,
+  });
+
+  const [isLoading, setIsLoading] = useState(false);
+  const [status, setStatus] = useState<{
+    type: "success" | "error";
+    message: string;
+  } | null>(null);
+
+  const toggleTag = (tag: string) => {
+    setForm((prev) => ({
+      ...prev,
+      tags: prev.tags.includes(tag)
+        ? prev.tags.filter((t) => t !== tag)
+        : [...prev.tags, tag],
+    }));
+  };
+
+  const hasChanges =
+    form.name !== tool.name ||
+    form.url !== tool.url ||
+    form.description !== tool.description ||
+    form.isPremium !== tool.isPremium ||
+    form.likesCount !== tool.likesCount ||
+    JSON.stringify(form.tags.sort()) !== JSON.stringify([...tool.tags].sort());
+
+  const handleSave = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setStatus(null);
+
+    try {
+      const res = await fetch("/api/admin/manual", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ _id: tool._id, ...form }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to update");
+
+      setStatus({ type: "success", message: "Tool updated successfully!" });
+      onUpdate?.(data);
+    } catch (err: any) {
+      setStatus({ type: "error", message: err.message });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div className="flex flex-col w-full h-full max-h-[85vh] overflow-y-auto">
+      {/* Header */}
+      <div className="sticky top-0 z-10 bg-card/80 backdrop-blur-md border-b px-6 py-5 flex items-center gap-4">
+        <div className="h-14 w-14 rounded-2xl bg-muted/50 border shadow-sm flex items-center justify-center overflow-hidden relative shrink-0">
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-primary/5" />
+          <div className="relative text-2xl font-bold font-serif text-primary">
+            <img
+              src={`https://www.google.com/s2/favicons?domain=${tool.url}&sz=64`}
+              onError={() => (
+                <span className="text-xl font-bold text-primary">
+                  {tool.name.charAt(0).toUpperCase()}
+                </span>
+              )}
+              alt={tool.name}
+              className="w-7 h-7 object-contain"
+            />
           </div>
         </div>
+        <div className="flex-1 min-w-0">
+          <h2 className="text-xl font-bold tracking-tight text-foreground truncate">
+            Edit Tool Details
+          </h2>
+          <p className="text-sm text-muted-foreground mt-0.5">
+            {isAdmin
+              ? "Modify the fields below and save your changes."
+              : "You need admin privileges to edit tools."}
+          </p>
+        </div>
+        {hasChanges && (
+          <Badge
+            variant="secondary"
+            className="shrink-0 bg-amber-500/10 text-amber-600 border-amber-500/20 text-[10px] font-bold"
+          >
+            UNSAVED
+          </Badge>
+        )}
       </div>
 
-      {/* Details & Similar Tools (Right side on desktop) */}
-      <div className="w-full md:w-[35%] bg-card p-6 md:p-8 flex flex-col md:overflow-y-auto">
-        <div className="mb-8">
-          <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-4 border-b pb-2">Details</h4>
-          <dl className="space-y-4 text-sm">
-            <div className="flex justify-between items-center">
-              <dt className="text-muted-foreground">URL</dt>
-              <dd className="font-semibold text-foreground flex items-center gap-1">
-                {new URL(tool.url).hostname}
-                <LuCircleCheck className="h-4 w-4 text-primary" />
-              </dd>
-            </div>
-            <div className="flex justify-between items-center">
-              <dt className="text-muted-foreground">Pricing</dt>
-              <dd className="font-medium text-foreground">Freemium</dd>
-            </div>
-            <div className="flex justify-between items-center">
-              <dt className="text-muted-foreground">Likes</dt>
-              <dd className="font-medium text-foreground">{tool.likesCount}</dd>
-            </div>
-          </dl>
+      {/* Form Content */}
+      <form onSubmit={handleSave} className="p-6 space-y-6 flex-1">
+        {/* Status Banner */}
+        {status && (
+          <div
+            className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium border transition-all ${
+              status.type === "success"
+                ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20"
+                : "bg-red-500/10 text-red-600 border-red-500/20"
+            }`}
+          >
+            {status.type === "success" ? (
+              <LuCheck className="h-4 w-4 shrink-0" />
+            ) : (
+              <LuX className="h-4 w-4 shrink-0" />
+            )}
+            {status.message}
+          </div>
+        )}
+
+        {/* Name & URL */}
+        <div className="grid md:grid-cols-2 gap-6">
+          <div className="space-y-2">
+            <label className="text-sm font-bold uppercase tracking-wider text-muted-foreground">
+              Tool Name
+            </label>
+            <input
+              required
+              disabled={!isAdmin}
+              value={form.name}
+              onChange={(e) => setForm({ ...form, name: e.target.value })}
+              className="w-full bg-background border rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+              placeholder="e.g. ChatGPT"
+            />
+          </div>
+          <div className="space-y-2">
+            <label className="text-sm font-bold uppercase tracking-wider text-muted-foreground">
+              URL
+            </label>
+            <input
+              required
+              type="text"
+              disabled={!isAdmin}
+              value={form.url}
+              onChange={(e) => setForm({ ...form, url: e.target.value })}
+              className="w-full bg-background border rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+              placeholder="https://example.com"
+            />
+          </div>
         </div>
 
-        <div className="flex-1">
-          <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-4 border-b pb-2">Tags</h4>
-          <div className="flex flex-wrap gap-2">
-            {tool.tags.map(tag => (
-              <Badge key={tag} variant="outline" className="text-[10px]">{tag}</Badge>
+        {/* Description */}
+        <div className="space-y-2">
+          <label className="text-sm font-bold uppercase tracking-wider text-muted-foreground">
+            Description
+          </label>
+          <textarea
+            required
+            rows={4}
+            disabled={!isAdmin}
+            value={form.description}
+            onChange={(e) => setForm({ ...form, description: e.target.value })}
+            className="w-full bg-background border rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium resize-none disabled:opacity-50 disabled:cursor-not-allowed"
+            placeholder="Provide a compelling description of the tool..."
+          />
+        </div>
+
+        {/* Tags */}
+        <div className="space-y-3">
+          <label className="text-sm font-bold uppercase tracking-wider text-muted-foreground block">
+            Select Tags
+          </label>
+          <div className="flex flex-wrap gap-2 max-h-48 overflow-y-auto p-4 bg-muted/20 border rounded-2xl scrollbar-thin">
+            {CATEGORIES.map((category) => (
+              <button
+                type="button"
+                key={category}
+                disabled={!isAdmin}
+                onClick={() => toggleTag(category)}
+                className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all border ${
+                  form.tags.includes(category)
+                    ? "bg-primary text-primary-foreground border-primary shadow-md"
+                    : "bg-background text-muted-foreground border-border hover:border-primary/50"
+                } disabled:opacity-50 disabled:cursor-not-allowed`}
+              >
+                {category}
+              </button>
             ))}
           </div>
         </div>
 
-        <div className="mt-8 p-6 rounded-2xl bg-primary text-primary-foreground relative overflow-hidden shadow-xl">
-           <div className="absolute top-0 right-0 p-4 opacity-20">
-             <LuBookmark className="h-24 w-24 -mr-8 -mt-8" />
-           </div>
-           <h4 className="font-bold mb-2 text-white relative z-10">Want organized collections?</h4>
-           <p className="text-xs text-white/80 mb-4 relative z-10 leading-relaxed">
-             Upgrade to Pro to create unlimited folders and share collections with your team.
-           </p>
-           <Button variant="secondary" className="w-full bg-white text-primary hover:bg-white/90 shadow-sm relative z-10 font-bold text-xs h-10">
-             LEARN MORE
-           </Button>
+        {/* Premium Toggle */}
+        <div className="hidden items-center gap-3 p-4 rounded-xl bg-muted/20 border">
+          <input
+            type="checkbox"
+            id="edit-premium"
+            disabled={!isAdmin}
+            checked={form.isPremium}
+            onChange={(e) => setForm({ ...form, isPremium: e.target.checked })}
+            className="h-5 w-5 rounded border-gray-300 text-primary focus:ring-primary"
+          />
+          <label
+            htmlFor="edit-premium"
+            className="text-sm font-bold cursor-pointer select-none"
+          >
+            Mark as Premium Tool
+          </label>
+          {form.isPremium && (
+            <Badge
+              variant="premium"
+              className="ml-auto text-[10px] py-1 text-primary"
+            >
+              PREMIUM
+            </Badge>
+          )}
         </div>
-      </div>
+
+        {/* Meta Info (read-only) */}
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <label className="text-sm font-bold uppercase tracking-wider text-muted-foreground">
+              Likes
+            </label>
+            <input
+              type="number"
+              disabled={!isAdmin}
+              value={form.likesCount}
+              onChange={(e) =>
+                setForm({ ...form, likesCount: Number(e.target.value) })
+              }
+              onFocus={(e) => e.target.select()} 
+              className="w-full bg-background border rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+            />
+          </div>
+          <div className="space-y-2">
+            <label className="text-sm font-bold uppercase tracking-wider text-muted-foreground">
+              Date Created
+            </label>
+            <input
+              disabled
+              readOnly
+              value={new Date(tool.createdAt).toLocaleDateString("en-IN", {dateStyle: "medium"})}
+              className="w-full bg-background border rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium resize-none disabled:opacity-50 disabled:cursor-not-allowed"
+            />
+          </div>
+        </div>
+
+        {/* Save Button */}
+        {isAdmin && (
+          <div className="pt-2 flex items-center gap-4">
+            <Button
+              type="submit"
+              disabled={isLoading || !hasChanges}
+              className="h-12 px-8 rounded-xl font-bold bg-primary text-primary-foreground shadow-lg shadow-primary/20 gap-2 disabled:opacity-50"
+            >
+              {isLoading ? (
+                <LuLoaderCircle className="h-5 w-5 animate-spin" />
+              ) : (
+                <>
+                  <LuSave className="h-4 w-4" />
+                  Save Changes
+                </>
+              )}
+            </Button>
+            {!hasChanges && (
+              <p className="text-xs text-muted-foreground">
+                No changes to save
+              </p>
+            )}
+          </div>
+        )}
+      </form>
     </div>
   );
 }

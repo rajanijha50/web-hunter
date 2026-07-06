@@ -1,6 +1,4 @@
-import Link from "next/link";
-import { Button } from "../ui/button";
-import { LuArrowRight, LuBookmark, LuListFilter, LuSearch } from "react-icons/lu";
+
 
 export default function LandingPage() {
   return (
@@ -28,88 +26,7 @@ export default function LandingPage() {
           extraordinary.
         </p>
 
-        <div className="flex flex-col sm:flex-row items-center gap-4 z-10">
-          <Link href="/discover">
-            <Button className="h-14 px-8 text-lg font-semibold rounded-full bg-foreground text-background hover:bg-foreground/90 transition-colors flex items-center gap-2">
-              Explore For Free <LuArrowRight className="h-5 w-5" />
-            </Button>
-          </Link>
-        </div>
-      </section>
-
-      {/* Process Section */}
-      <section className="py-24 bg-background text-foreground px-4 md:px-8">
-        <div className="container mx-auto max-w-6xl">
-          <span className="text-xs font-bold tracking-widest text-primary uppercase mb-4 block">
-            The Process
-          </span>
-          <h2 className="text-4xl md:text-5xl font-bold tracking-tight mb-16">
-            Three steps to the niche web
-          </h2>
-
-          <div className="grid md:grid-cols-3 gap-12">
-            <div>
-              <div className="h-16 w-16 rounded-2xl bg-muted flex items-center justify-center mb-6 border shadow-sm">
-                <LuSearch className="h-8 w-8 text-foreground" />
-              </div>
-              <h3 className="text-xl font-bold mb-3">Search or Browse</h3>
-              <p className="text-muted-foreground leading-relaxed">
-                Use our semantic search or browse curated collections of indie
-                makers and niche directories.
-              </p>
-            </div>
-            <div>
-              <div className="h-16 w-16 rounded-2xl bg-muted flex items-center justify-center mb-6 border shadow-sm">
-                <LuListFilter className="h-8 w-8 text-foreground" />
-              </div>
-              <h3 className="text-xl font-bold mb-3">Explore Cards</h3>
-              <p className="text-muted-foreground leading-relaxed">
-                View interactive previews and curator notes for every site in
-                our index. No dead links, ever.
-              </p>
-            </div>
-            <div>
-              <div className="h-16 w-16 rounded-2xl bg-muted flex items-center justify-center mb-6 border shadow-sm">
-                <LuBookmark className="h-8 w-8 text-foreground" />
-              </div>
-              <h3 className="text-xl font-bold mb-3">Save and Unlock</h3>
-              <p className="text-muted-foreground leading-relaxed">
-                Collect your findings in private lists or unlock the full pro
-                database for deeper research.
-              </p>
-            </div>
-          </div>
-
-          <div className="mt-16 flex flex-wrap gap-3 overflow-x-auto pb-4 scrollbar-none">
-            {[
-              "AI Tools",
-              "Productivity",
-              "Design Systems",
-              "SaaS Templates",
-              "Creative Coding",
-              "Market Research",
-              "No-Code",
-              "Web3 Insights",
-            ].map((tag, i) => (
-              <span
-                key={tag}
-                className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap cursor-pointer transition-colors ${
-                  i === 0
-                    ? "bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400 hover:bg-indigo-200"
-                    : i === 1
-                      ? "bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 hover:bg-amber-200"
-                      : i === 3
-                        ? "bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-200"
-                        : i === 4
-                          ? "bg-rose-100 dark:bg-rose-900/30 text-rose-700 dark:text-rose-400 hover:bg-rose-200"
-                          : "bg-muted text-muted-foreground hover:bg-muted/80"
-                }`}
-              >
-                {tag}
-              </span>
-            ))}
-          </div>
-        </div>
+        
       </section>
     </div>
   );

@@ -1,22 +1,26 @@
 "use client";
-
 import { CATEGORIES } from "@/lib/data";
-import { Button } from "@/components/ui/button";
-import { LuHistory, LuHeart, LuCalendar, LuLoaderCircle } from "react-icons/lu";
-import { useState, useEffect, useRef, useCallback } from "react";
-import { ToolCard } from "@/featuers/discover/tool-card";
-
+import { useState, useEffect, useRef, useCallback, Suspense } from "react";
+import { LuHistory, LuLoaderCircle } from "react-icons/lu";
 import { useDiscoverQuery } from "@/hooks/use-discover-query";
 import { PaginationControls } from "@/featuers/discover/pagination-controls";
-import { Suspense } from "react";
-import { useWebStore } from "@/store/websiteStore";
+import { useUserStore } from "@/store/userStore";
+import { useWebsiteStore } from "@/store/websiteStore";
 import { WebsiteType } from "@/types/website";
-import { useUser } from "@/store/userStore";
+import { Dialog } from "@/components/ui/dialog";
+import { ToolCard } from "./tool-card";
+import { ToolModal } from "./tool-modal";
 
 const PAGE_SIZE = 30;
 
 function DiscoverFeedContent() {
-  const { category: activeCategory, page, sortby, order, setQuery } = useDiscoverQuery();
+  const {
+    category: activeCategory,
+    page,
+    sortby,
+    order,
+    setQuery,
+  } = useDiscoverQuery();
   const [selectedTool, setSelectedTool] = useState<WebsiteType | null>(null);
   const categoriesRef = useRef<HTMLDivElement>(null);
 
@@ -37,36 +41,40 @@ function DiscoverFeedContent() {
     el.addEventListener("wheel", handleCategoryWheel, { passive: false });
     return () => el.removeEventListener("wheel", handleCategoryWheel);
   }, [handleCategoryWheel]);
-  const { websites, fetchWebsites, loading } = useWebStore();
-  const user = useUser((state) => state.user);
+  const { websites, fetchWebsites, loading } = useWebsiteStore();
+  const user = useUserStore((state) => state.user);
   const [isLoading, setIsLoading] = useState(loading);
   const [tools, setTools] = useState<WebsiteType[]>([]);
 
-  useEffect(() => {
-    fetchWebsites();
-  }, []);
-  
+  // useEffect(() => {
+  //   fetchWebsites();
+  // }, []);
+
   useEffect(() => {
     setTools(websites);
-  }, [websites]);
+  }, [websites, loading]);
 
   const sortedTools = [...tools].sort((a, b) => {
     switch (sortby) {
       case "Latest":
-        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+        return (
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        );
       case "Oldest":
-        return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+        return (
+          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+        );
       case "Popular":
         return b.likesCount - a.likesCount;
       default:
         return 0;
     }
   });
-  
+
   const filteredTools = sortedTools.filter(
     (t) =>
       activeCategory === "All AI" ||
-      t.tags.some((tag) => tag.toLowerCase() === activeCategory.toLowerCase())
+      t.tags.some((tag) => tag.toLowerCase() === activeCategory.toLowerCase()),
   );
 
   // Pagination logic
@@ -176,7 +184,10 @@ function DiscoverFeedContent() {
         </div>
 
         {/* Categories */}
-        <div ref={categoriesRef} className="flex items-center gap-3 overflow-x-auto pb-4">
+        <div
+          ref={categoriesRef}
+          className="flex items-center gap-3 overflow-x-auto pb-4"
+        >
           {CATEGORIES.map((cat) => (
             <button
               key={cat}
@@ -232,9 +243,23 @@ function DiscoverFeedContent() {
       </div>
 
       {/* Detail Modal Overlay */}
-      {/* <Dialog open={!!selectedTool} onOpenChange={(open) => !open && setSelectedTool(null)}>
-        {selectedTool && <ToolModal tool={selectedTool} />}
-      </Dialog> */}
+      <Dialog
+        open={!!selectedTool}
+        onOpenChange={(open) => !open && setSelectedTool(null)}
+      >
+        {selectedTool && user?.role === "admin" && (
+          <ToolModal
+            tool={selectedTool}
+            onUpdate={(updated) => {
+              console.log("updated in feed:", updated);
+              setTools((prev) =>
+                prev.map((t) => (t._id === updated._id ? updated : t)),
+              );
+              setSelectedTool(updated);
+            }}
+          />
+        )}
+      </Dialog>
     </div>
   );
 }

@@ -1,36 +1,24 @@
 "use client";
 import { Header } from "@/components/layout/Header";
 import { useEffect } from "react";
-import LandingPage from "@/components/layout/LandingPage";
-import Trending from "@/components/layout/Trending";
-import Testimonials from "@/components/layout/Testimonials";
 import Footer from "@/components/layout/Footer";
+import { useUserStore } from "@/store/userStore";
+import Authenticated from "@/components/layout/Authenticated";
+import Anonymous from "@/components/layout/Anonymous";
+import { useWebsiteStore } from "@/store/websiteStore";
 
 export default function Page() {
-
-  const fetchTest = async () => {
-    try {
-      const res = await fetch("/api/websites");
-      const data = await res.json();
-      if (data.success) {
-        console.log(data.data);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  const user = useUserStore((state) => state.user);
+  const {fetchWebsites} = useWebsiteStore()
 
   useEffect(() => {
-    // fetchTest();
-  }, []);
-
+    fetchWebsites()
+  }, [])
   return (
-    <div>
+    <>
       <Header />
-      <LandingPage />
-      <Trending />
-      <Testimonials />
+      {user ? <Authenticated /> : <Anonymous />}
       <Footer />
-    </div>
+    </>
   );
 }
