@@ -2,7 +2,7 @@
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-background text-foreground selection:bg-primary/30">
+    <div className="animate-slide-in-top min-h-screen bg-background text-foreground selection:bg-primary/30">
       {/* Hero Section */}
       <section className="relative pt-24 pb-32 overflow-hidden flex flex-col items-center justify-center text-center px-4">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/20 via-background to-background pointer-events-none" />

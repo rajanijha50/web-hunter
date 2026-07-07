@@ -16,7 +16,7 @@ export default function FavoritePage() {
   return (
     <>
       <Header />
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="animate-slide-in-top max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {isLoading ? (
           <div className="flex justify-center items-center h-64">
             <p className="text-muted-foreground">Loading...</p>

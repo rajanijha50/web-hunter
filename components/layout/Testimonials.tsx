@@ -44,9 +44,6 @@ export default function Testimonials() {
                     <h4 className="font-bold text-foreground text-sm">
                       {t.name}
                     </h4>
-                    <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold">
-                      {t.role}
-                    </span>
                   </div>
                 </div>
               </div>

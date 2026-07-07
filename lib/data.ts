@@ -1,26 +1,3 @@
-export type Tool = {
-  _id: string;
-  name: string;
-  url: string;
-  description: string;
-  tags: string[];
-  isPremium: boolean;
-  likesCount: number;
-  createdAt: string;
-};
-
-// export const CATEGORIES = [
-//   "All AI",
-//   "Writing",
-//   "Image",
-//   "Code",
-//   "Video",
-//   "Voice",
-//   "3D",
-//   "Productivity",
-//   "Marketing",
-//   "Design",
-// ];
 export const CATEGORIES = [
   '3D Modeling',
   'AI Agents',
@@ -117,28 +94,90 @@ export const CATEGORIES = [
   'Writing Tool'
 ];
 
-export const TOOLS: Tool[] = [];
 
 export const TESTIMONIALS = [
   {
-    id: "1",
+    _id: "1",
     name: "Sarah Jenkins",
     role: "PRODUCT DESIGNER",
     content: "Web Hunter has completely changed how I source inspiration for my projects. No more generic search results.",
     avatarSeed: "sarah"
   },
   {
-    id: "2",
+    _id: "2",
     name: "Marcus Thorne",
     role: "GROWTH LEAD",
     content: "The curation is top-tier. I found three incredible tools for my workflow within the first ten minutes of joining.",
     avatarSeed: "marcus"
   },
   {
-    id: "3",
+    _id: "3",
     name: "Lila Chen",
     role: "CREATIVE DIRECTOR",
     content: "A breath of fresh air for the internet. It feels like the old days of stumbling upon gems, but professionally organized.",
     avatarSeed: "lila"
   }
 ];
+
+export const TEMP = [
+  {
+    _id: "1",
+    name: "ChatGPT",
+    url: "https://chat.openai.com",
+    description: "The most popular AI chatbot",
+    tags: ["AI", "Chatbot"],
+    isPremium: true,
+    likesCount: 100,
+    createdAt: "2022-01-01",
+  },
+  {
+    _id: "2",
+    name: "Gemini",
+    url: "https://gemini.google.com",
+    description: "Google's AI chatbot",
+    tags: ["AI", "Chatbot"],
+    isPremium: false,
+    likesCount: 50,
+    createdAt: "2022-01-01",
+  },
+  {
+    _id: "3",
+    name: "ChatGPT",
+    url: "https://chat.openai.com",
+    description: "The most popular AI chatbot",
+    tags: ["AI", "Chatbot"],
+    isPremium: true,
+    likesCount: 100,
+    createdAt: "2022-01-01",
+  },
+  {
+    _id: "4",
+    name: "Gemini",
+    url: "https://gemini.google.com",
+    description: "Google's AI chatbot",
+    tags: ["AI", "Chatbot"],
+    isPremium: false,
+    likesCount: 50,
+    createdAt: "2022-01-01",
+  },
+  {
+    _id: "5",
+    name: "ChatGPT",
+    url: "https://chat.openai.com",
+    description: "The most popular AI chatbot",
+    tags: ["AI", "Chatbot"],
+    isPremium: true,
+    likesCount: 100,
+    createdAt: "2022-01-01",
+  },
+  {
+    _id: "6",
+    name: "Gemini",
+    url: "https://gemini.google.com",
+    description: "Google's AI chatbot",
+    tags: ["AI", "Chatbot"],
+    isPremium: false,
+    likesCount: 50,
+    createdAt: "2022-01-01",
+  },
+]

@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Poppins } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { SessionProvider } from "@/components/providers/session-provider";
 import TankStackProviders from "@/components/providers/tankstack-provider";
+import { CustomToaster } from "@/components/feedback/SendNotification";
 
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
+const poppins = Poppins({ subsets: ["latin"], weight: ["200", "400", "500","600"], variable: "--font-poppins" });
 
 export const metadata: Metadata = {
   title: "Web Hunter",
@@ -19,7 +21,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" suppressHydrationWarning className={inter.variable}>
+    <html lang="en" suppressHydrationWarning className={`${inter.variable} ${poppins.variable}`}>
       <body className="font-sans antialiased">
         <SessionProvider>
           <TankStackProviders>
@@ -29,6 +31,7 @@ export default function RootLayout({
               enableSystem
               disableTransitionOnChange
             >
+              <CustomToaster/>
               {children}
             </ThemeProvider>
           </TankStackProviders>

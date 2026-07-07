@@ -1,10 +1,14 @@
+"use client"
+import { useUserStore } from "@/store/userStore";
 import Link from "next/link";
 import { FaGithub, FaInstagram, FaLinkedin } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
 
 export default function Footer() {
+
+  const user = useUserStore((state) => state.user)
   const pages = [
-    { name: "favorites", href: "/my-favorites" },
+    { name: "my favorites", href: "/my-favorites" },
     { name: "about", href: "/about" },
     // { name: "feedback", href: "/feedback" },
     // { name: "contribute", href: "/contribute" },
@@ -40,7 +44,7 @@ export default function Footer() {
         <div className="container mx-auto max-w-6xl flex flex-col md:flex-row gap-8 p-5 md:p-10">
           <div className="w-full md:max-w-1/2">
             <Link href="/" className="flex items-center space-x-2 mb-4">
-              <span className="font-bold text-2xl tracking-tight text-primary">
+              <span className="font-bold text-2xl tracking-tight">
                 Web
                 <span className="font-medium text-muted-foreground">
                   Hunter
@@ -72,7 +76,7 @@ export default function Footer() {
             <h5 className="font-bold mb-4 uppercase">Pages</h5>
             <div className="flex flex-col text-sm gap-2">
               {pages.map((page, idx) => (
-                <Link href={page.href} key={idx} className="capitalize hover:underline">
+                <Link href={page.href} key={idx} className="capitalize hover:underline w-fit">
                   {page.name}
                 </Link>
               ))}
@@ -87,12 +91,12 @@ export default function Footer() {
             © {new Date().getFullYear()} <Link href="/" className="font-semibold cursor-pointer transition-all duration-200 hover:underline">Web Hunter</Link>. Discovery Redefined.
           </span>
           <div className="flex gap-8">
-            <span className="hover:underline cursor-pointer transition-all duration-200">
+            <Link href={"/"} className="hover:underline cursor-pointer transition-all duration-200">
               Privacy
-            </span>
-            <span className="hover:underline cursor-pointer transition-all duration-200">
+            </Link>
+            <Link href={"/"} className="hover:underline cursor-pointer transition-all duration-200">
               Terms
-            </span>
+            </Link>
           </div>
         </div>
       </footer>

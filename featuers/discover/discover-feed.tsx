@@ -91,7 +91,7 @@ function DiscoverFeedContent() {
   );
 
   return (
-    <div className="space-y-12">
+    <div className="animate-slide-in-top space-y-12">
       {/* Welcome Banner */}
       <div>
         <h1 className="text-3xl md:text-5xl font-bold tracking-tight mb-6">

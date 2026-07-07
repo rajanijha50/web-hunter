@@ -22,7 +22,7 @@ export default function Trending() {
     <>
       {/* Trending Now Marquee Banner */}
       {trendingWebsites.length > 0 && (
-        <section className="py-12 bg-background overflow-hidden border-t">
+        <section className="animate-fade-in py-12 bg-background overflow-hidden border-t">
           <div className="mb-8 px-4 md:px-8">
             <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight text-center">
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-primary to-amber-400">

@@ -31,8 +31,9 @@
   --radius-lg: var(--radius);
   --radius-md: calc(var(--radius) - 2px);
   --radius-sm: calc(var(--radius) - 4px);
-  
+
   --font-sans: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-poppns: var(--font-poppins);
 
   --animate-marquee: marquee 30s linear infinite;
 }
@@ -109,13 +110,39 @@
     --ring: hsl(243 75% 65%);
   }
 }
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
 
+@keyframes slideInFromTop {
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+.animate-slide-in-top {
+  animation: slideInFromTop 0.5s ease-in-out;
+}
 @layer base {
   * {
-    @apply border-border;
+    @apply border-border transition-all duration-200 ease-in-out;
   }
   body {
-    @apply bg-background text-foreground font-sans;
+    @apply bg-background text-foreground font-poppns;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
