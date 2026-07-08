@@ -1,18 +1,20 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { LuLoaderCircle, LuSave, LuX, LuCheck, LuTrash } from "react-icons/lu";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { LuLoaderCircle, LuSave, LuX, LuCheck } from "react-icons/lu";
-import { WebsiteType } from "@/types/website";
+import { SendNotification } from "@/components/feedback/SendNotification";
 import { CATEGORIES } from "@/lib/data";
+import { WebsiteType } from "@/types/website";
 import { useUserStore } from "@/store/userStore";
 
 interface ToolModalProps {
   tool: WebsiteType;
   onUpdate?: (updated: WebsiteType) => void;
+  onDelete?: (id: string) => void
 }
 
-export function ToolModal({ tool, onUpdate }: ToolModalProps) {
+export function ToolModal({ tool, onUpdate, onDelete }: ToolModalProps) {
   const user = useUserStore((state) => state.user);
   const isAdmin = user?.role === "admin";
 
@@ -71,6 +73,29 @@ export function ToolModal({ tool, onUpdate }: ToolModalProps) {
     }
   };
 
+  const deleteTool = async () => {
+    if (!user) return;
+    try {
+      const res = await fetch("/api/admin/manual", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ _id: tool._id }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to delete");
+
+      setStatus({ type: "success", message: "Tool deleted successfully!" });
+      onDelete?.(tool._id);
+    } catch (err: any) {
+      setStatus({ type: "error", message: err.message });
+    }
+  };
+
+  useEffect(() => {
+    if (!status) return;
+    SendNotification(status?.message, status?.type);
+  }, [status]);
+
   return (
     <div className="flex flex-col w-full h-full max-h-[85vh] overflow-y-auto">
       {/* Header */}
@@ -112,24 +137,6 @@ export function ToolModal({ tool, onUpdate }: ToolModalProps) {
 
       {/* Form Content */}
       <form onSubmit={handleSave} className="p-6 space-y-6 flex-1">
-        {/* Status Banner */}
-        {status && (
-          <div
-            className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium border transition-all ${
-              status.type === "success"
-                ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20"
-                : "bg-red-500/10 text-red-600 border-red-500/20"
-            }`}
-          >
-            {status.type === "success" ? (
-              <LuCheck className="h-4 w-4 shrink-0" />
-            ) : (
-              <LuX className="h-4 w-4 shrink-0" />
-            )}
-            {status.message}
-          </div>
-        )}
-
         {/* Name & URL */}
         <div className="grid md:grid-cols-2 gap-6">
           <div className="space-y-2">
@@ -240,7 +247,7 @@ export function ToolModal({ tool, onUpdate }: ToolModalProps) {
               onChange={(e) =>
                 setForm({ ...form, likesCount: Number(e.target.value) })
               }
-              onFocus={(e) => e.target.select()} 
+              onFocus={(e) => e.target.select()}
               className="w-full bg-background border rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium disabled:opacity-50 disabled:cursor-not-allowed"
             />
           </div>
@@ -251,7 +258,9 @@ export function ToolModal({ tool, onUpdate }: ToolModalProps) {
             <input
               disabled
               readOnly
-              value={new Date(tool.createdAt).toLocaleDateString("en-IN", {dateStyle: "medium"})}
+              value={new Date(tool.createdAt).toLocaleDateString("en-IN", {
+                dateStyle: "medium",
+              })}
               className="w-full bg-background border rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium resize-none disabled:opacity-50 disabled:cursor-not-allowed"
             />
           </div>
@@ -259,26 +268,46 @@ export function ToolModal({ tool, onUpdate }: ToolModalProps) {
 
         {/* Save Button */}
         {isAdmin && (
-          <div className="pt-2 flex items-center gap-4">
-            <Button
-              type="submit"
-              disabled={isLoading || !hasChanges}
-              className="h-12 px-8 rounded-xl font-bold bg-primary text-primary-foreground shadow-lg shadow-primary/20 gap-2 disabled:opacity-50"
-            >
-              {isLoading ? (
-                <LuLoaderCircle className="h-5 w-5 animate-spin" />
-              ) : (
-                <>
-                  <LuSave className="h-4 w-4" />
-                  Save Changes
-                </>
+          <div className="pt-2 flex justify-between items-center">
+            <div className="flex items-center gap-4">
+              <Button
+                type="submit"
+                disabled={isLoading || !hasChanges}
+                className="h-12 px-8 rounded-xl font-bold bg-primary text-primary-foreground shadow-lg shadow-primary/20 gap-2 disabled:opacity-50"
+              >
+                {isLoading ? (
+                  <LuLoaderCircle className="h-5 w-5 animate-spin" />
+                ) : (
+                  <>
+                    <LuSave className="h-4 w-4" />
+                    Save Changes
+                  </>
+                )}
+              </Button>
+              {!hasChanges && (
+                <p className="text-xs text-muted-foreground">
+                  No changes to save
+                </p>
               )}
-            </Button>
-            {!hasChanges && (
-              <p className="text-xs text-muted-foreground">
-                No changes to save
-              </p>
-            )}
+            </div>
+
+            <div>
+              <Button
+                type="button"
+                disabled={isLoading}
+                onClick={() => deleteTool()}
+                className="h-12 px-8 rounded-xl font-bold bg-red-500/10 hover:bg-red-600/40 text-red-500 shadow-lg gap-2 disabled:opacity-50"
+              >
+                {isLoading ? (
+                  <LuLoaderCircle className="h-5 w-5 animate-spin" />
+                ) : (
+                  <>
+                    <LuTrash className="h-4 w-4" />
+                    Delete Tool
+                  </>
+                )}
+              </Button>
+            </div>
           </div>
         )}
       </form>

@@ -29,7 +29,10 @@ export async function PUT(request: NextRequest) {
   try {
     const { _id, ...updates } = await request.json();
     if (!_id) {
-      return NextResponse.json({ error: "Tool _id is required" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Tool _id is required" },
+        { status: 400 },
+      );
     }
 
     await connectDB();
@@ -40,7 +43,7 @@ export async function PUT(request: NextRequest) {
         ...updates,
         updatedAt: new Date(),
       },
-      { new: true, runValidators: true }
+      { new: true, runValidators: true },
     );
 
     if (!updatedTool) {
@@ -48,6 +51,27 @@ export async function PUT(request: NextRequest) {
     }
 
     return NextResponse.json(updatedTool, { status: 200 });
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message }, { status: 400 });
+  }
+}
+
+export async function DELETE(request: NextRequest) {
+  if (!(await isAdmin())) return unauthorizedResponse();
+  try {
+    const { _id } = await request.json();
+    if (!_id) {
+      return NextResponse.json(
+        { error: "Tool _id is required" },
+        { status: 400 },
+      );
+    }
+    await connectDB();
+    const deletedTool = await WebModel.findByIdAndDelete(_id);
+    if (!deletedTool) {
+      return NextResponse.json({ error: "Tool not found" }, { status: 404 });
+    }
+    return NextResponse.json(deletedTool, { status: 200 });
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 400 });
   }

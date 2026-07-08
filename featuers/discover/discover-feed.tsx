@@ -257,6 +257,12 @@ function DiscoverFeedContent() {
               );
               setSelectedTool(updated);
             }}
+            onDelete={(deletedId) => {
+              setWebsites(websites.filter((t) => t._id !== deletedId));
+              setTimeout(() => {
+                setSelectedTool(null);
+              }, 3000);
+            }}
           />
         )}
       </Dialog>
