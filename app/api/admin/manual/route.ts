@@ -1,5 +1,5 @@
 import { NextResponse, NextRequest } from "next/server";
-import { isAdmin, unauthorizedResponse } from "@/lib/admin-auth";
+import { isAdmin, unauthorizedResponse } from "@/lib/admin/admin-auth";
 import { connectDB } from "@/lib/db";
 import WebModel from "@/models/Website";
 

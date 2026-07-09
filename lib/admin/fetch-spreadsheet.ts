@@ -1,9 +1,8 @@
-import { SheetRow } from "./bulk-import";
 
 interface FetchSheetDataParams {
-  sheetId: string,
-  range: string,
-  startingLetter?: string,
+  sheetId: string;
+  range: string;
+  startingLetter?: string;
 }
 
 export async function fetchSheetData({
@@ -11,15 +10,14 @@ export async function fetchSheetData({
   range,
   startingLetter,
 }: FetchSheetDataParams): Promise<any> {
-
-//   //console.log("sheet id: ", sheetId)
-//   //console.log("range: ", range)
+  //   //console.log("sheet id: ", sheetId)
+  //   //console.log("range: ", range)
 
   if (!range) {
     return {
       success: false,
       message: "Range is required to fetch data from Google Sheets",
-      data: []
+      data: [],
     };
   }
   const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId || process.env.GOOGLE_SHEET_ID}/values/${range}?key=${process.env.GOOGLE_PRIVATE_KEY}`;
@@ -31,11 +29,12 @@ export async function fetchSheetData({
     const result = await response.json();
 
     if (result.error) {
-    //   console.error("API Error:", result.error, url);
+      //   console.error("API Error:", result.error, url);
       return {
         success: false,
-        message: result.error?.message || "Failed to fetch data from Google Sheets",
-        data: []
+        message:
+          result.error?.message || "Failed to fetch data from Google Sheets",
+        data: [],
       };
     }
 
@@ -46,7 +45,7 @@ export async function fetchSheetData({
       return {
         success: false,
         message: "No valid data found in the spreadsheet.",
-        data: []
+        data: [],
       };
     }
 
@@ -70,9 +69,7 @@ export async function fetchSheetData({
 
       // 2. Check for error markers in any field
       const hasError = Object.values(item).some((val: any) =>
-        invalidMarkers.some((marker: string) =>
-          val == marker
-        ),
+        invalidMarkers.some((marker: string) => val == marker),
       );
       if (hasError) return false;
 
@@ -89,16 +86,16 @@ export async function fetchSheetData({
     //console.log("filtered Data", filteredData.slice(0, 5));
 
     return {
-        success: true,
-        message: "Data fetched successfully",
-        data: filteredData
-    }
+      success: true,
+      message: "Data fetched successfully",
+      data: filteredData,
+    };
   } catch (error: any) {
     console.error("Error fetching sheet data:", error);
     return {
-        success: false,
-        message: error.message || "Failed to fetch data from Google Sheets",
-        data: []
+      success: false,
+      message: error.message || "Failed to fetch data from Google Sheets",
+      data: [],
     };
   }
 }

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { isAdmin, unauthorizedResponse } from "@/lib/admin-auth";
-import { getBulkPreview } from "@/lib/bulk-import";
-import { fetchSheetData } from "@/lib/fetch-spreadsheet";
+import { isAdmin, unauthorizedResponse } from "@/lib/admin/admin-auth";
+import { getBulkPreview } from "@/lib/admin/bulk-import";
+import { fetchSheetData } from "@/lib/admin/fetch-spreadsheet";
 
 export async function POST(request: NextRequest) {
   if (!(await isAdmin())) return unauthorizedResponse();

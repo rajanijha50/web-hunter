@@ -1,7 +1,7 @@
 export async function fetchFavorites(user_id: string) {
   const res = await fetch(`/api/favorites?user_id=${user_id}`);
   if (!res.ok) throw new Error("Failed to fetch favorites");
-  const data = await res.json(); 
+  const data = await res.json();
   return data.data.map((item: any) => item.website_id).filter(Boolean);
 }
 
