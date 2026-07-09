@@ -1,14 +1,9 @@
 "use client";
 import { SendNotification } from "@/components/feedback/SendNotification";
-import InsertAI from "@/featuers/admin/InsertAI";
-import InsertManual from "@/featuers/admin/InsertManual";
+import InsertAI from "@/features/admin/InsertAI";
+import InsertManual from "@/features/admin/InsertManual";
 import { useEffect, useState } from "react";
-import {
-  LuPlus,
-  LuSparkles,
-  LuCheck,
-  LuX,
-} from "react-icons/lu";
+import { LuPlus, LuSparkles, LuCheck, LuX } from "react-icons/lu";
 
 export default function AdminPage() {
   const [activeTab, setActiveTab] = useState<"manual" | "bulk">("manual");

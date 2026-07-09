@@ -3,7 +3,7 @@ import { CATEGORIES } from "@/lib/data";
 import { useState, useEffect, useRef, useCallback, Suspense } from "react";
 import { LuHistory, LuLoaderCircle } from "react-icons/lu";
 import { useDiscoverQuery } from "@/hooks/use-discover-query";
-import { PaginationControls } from "@/featuers/discover/pagination-controls";
+import { PaginationControls } from "@/features/discover/pagination-controls";
 import { useUserStore } from "@/store/userStore";
 import { useWebsiteStore } from "@/store/websiteStore";
 import { WebsiteType } from "@/types/website";

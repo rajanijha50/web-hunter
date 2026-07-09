@@ -1,6 +1,6 @@
 "use client";
 import { Header } from "@/components/layout/Header";
-import { ToolCard } from "@/featuers/discover/tool-card";
+import { ToolCard } from "@/features/discover/tool-card";
 import { useUserStore } from "@/store/userStore";
 import { useQuery } from "@tanstack/react-query";
 import { fetchFavorites } from "@/lib/cache/favorites";
@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { SendNotification } from "@/components/feedback/SendNotification";
 import { LuSearch } from "react-icons/lu";
-import SearchWebsite from "@/featuers/search/SearchWebsite";
+import SearchWebsite from "@/features/search/SearchWebsite";
 
 export default function FavoritePage() {
   const { user } = useUserStore();

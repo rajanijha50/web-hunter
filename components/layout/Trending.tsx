@@ -2,7 +2,7 @@
 import { useWebsiteStore } from "@/store/websiteStore";
 import { useEffect, useState } from "react";
 import { WebsiteType } from "@/types/website";
-import { ToolCard } from "@/featuers/discover/tool-card";
+import { ToolCard } from "@/features/discover/tool-card";
 import Link from "next/link";
 import { Button } from "../ui/button";
 import { LuArrowRight } from "react-icons/lu";

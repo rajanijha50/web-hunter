@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useUserStore } from "@/store/userStore";
-import SearchWebsite from "@/featuers/search/SearchWebsite";
+import SearchWebsite from "@/features/search/SearchWebsite";
 import { Button } from "@/components/ui/button";
 import { LuSearch, LuUser, LuMenu, LuLogOut, LuX } from "react-icons/lu";
 import { ThemeToggle } from "@/components/theme-toggle";
