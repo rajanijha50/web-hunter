@@ -1,19 +1,23 @@
-import { TEMP } from "@/lib/data";
+"use client";
 import { LuSearch, LuX } from "react-icons/lu";
 import { ToolCard } from "../discover/tool-card";
 import { useWebsiteStore } from "@/store/websiteStore";
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import { WebsiteType } from "@/types/website";
 import { Button } from "@/components/ui/button";
 
 interface SearchWebsiteProps {
+  WebData: WebsiteType[];
   onClose: () => void;
 }
 
-export default function SearchWebsite({ onClose }: SearchWebsiteProps) {
-  const { websites } = useWebsiteStore();
+export default function SearchWebsite({
+  WebData,
+  onClose,
+}: SearchWebsiteProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [results, setResults] = useState<WebsiteType[]>([]);
+  const [noResults, setNoResults] = useState(false);
 
   const handleSearch = (value: string) => {
     // console.log('search input: ', value, 'websites: ', websites.length)
@@ -21,7 +25,7 @@ export default function SearchWebsite({ onClose }: SearchWebsiteProps) {
       return setResults([]);
     }
 
-    const filteredResults = websites?.filter(
+    const filteredResults = WebData?.filter(
       (website) =>
         website?.name?.toLowerCase().includes(value.toLowerCase()) ||
         website?.url?.toLowerCase().includes(value.toLowerCase()) ||
@@ -29,8 +33,23 @@ export default function SearchWebsite({ onClose }: SearchWebsiteProps) {
           tag.toLowerCase().includes(value.toLowerCase()),
         ),
     );
+    setNoResults(filteredResults.length == 0)
     setResults(filteredResults);
   };
+
+  const openSearchWindowByShortcut = (e: KeyboardEvent) => {
+    if (e.key === "/") {
+      e.preventDefault();
+      onClose();
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener("keydown", openSearchWindowByShortcut);
+    return () => {
+      window.removeEventListener("keydown", openSearchWindowByShortcut);
+    };
+  }, []);
 
   return (
     <div className="fixed inset-0 z-50 w-screen h-screen text-foreground">
@@ -61,10 +80,13 @@ export default function SearchWebsite({ onClose }: SearchWebsiteProps) {
           </Button>
         </div>
         <div className="flex flex-wrap justify-center items-center gap-5 py-20 overflow-y-auto max-h-[calc(100vh-100px)]">
-          {results.length > 0 &&
-            results?.map((t) => {
-              return <ToolCard tool={t} key={t._id} />;
-            })}
+          {noResults ? (
+            <p className="text-muted-foreground">No results found</p>
+          ) : searchQuery.length > 0 && results.length > 0 ? (
+            results?.map((t) => <ToolCard tool={t} key={t._id} />)
+          ) : (
+            <p className="text-muted-foreground">Search for a website</p>
+          )}
         </div>
       </div>
 

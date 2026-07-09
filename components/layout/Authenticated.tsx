@@ -1,5 +1,5 @@
-import { DashboardLayout } from "@/featuers/discover/dashboard-layout";
-import { DiscoverFeed } from "@/featuers/discover/discover-feed";
+import { DashboardLayout } from "@/featuers/discover/DiscoverLayout";
+import { DiscoverFeed } from "@/featuers/discover/DiscoverFeed";
 
 export default function Authenticated() {
   return (

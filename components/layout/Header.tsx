@@ -9,20 +9,21 @@ import SearchWebsite from "@/featuers/search/SearchWebsite";
 import { Button } from "@/components/ui/button";
 import { LuSearch, LuUser, LuMenu, LuLogOut, LuX } from "react-icons/lu";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { useWebsiteStore } from "@/store/websiteStore";
 
 export function Header() {
   const pathname = usePathname();
-  const isLandingPage = pathname === "/";
   const [openSearchWindow, setOpenSearchWindow] = useState(false);
   const { fetchUser, user, loading } = useUserStore();
   const [mobileMenu, setMobileMenu] = useState(false);
+  const website = useWebsiteStore((state) => state.websites);
 
   useEffect(() => {
     if (!user) fetchUser();
   }, []);
 
   const openSearchWindowByShortcut = (e: KeyboardEvent) => {
-    if (e.key === "/" && (pathname === "/" || pathname === "/discover")) {
+    if (e.key === "/" && pathname === "/") {
       e.preventDefault();
       setOpenSearchWindow(true);
     }
@@ -54,20 +55,21 @@ export function Header() {
           </div>
 
           {/* search icon */}
-          <div className="hidden md:flex relative w-60 mx-auto xl:w-80">
-            <LuSearch className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4" />
-            <input
-              type="search"
-              placeholder="Search 3,200+ websites..."
-              aria-label="Search websites"
-              readOnly
-              onClick={() => setOpenSearchWindow(true)}
-              className="pl-10 border p-4 rounded-full cursor-pointer text-sm"
-            />
-          </div>
+          {pathname == "/" && (
+            <div className="hidden md:flex relative w-60 mx-auto xl:w-80">
+              <LuSearch className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4" />
+              <input
+                type="search"
+                placeholder="Press / to toggle search"
+                aria-label="Search websites"
+                readOnly
+                onClick={() => setOpenSearchWindow(true)}
+                className="pl-10 border p-4 rounded-full cursor-pointer text-sm"
+              />
+            </div>
+          )}
 
           {/* nav links */}
-
           <nav
             className={`hidden md:flex items-center gap-4 md:gap-6 text-sm font-medium`}
           >
@@ -75,10 +77,9 @@ export function Header() {
             <div className="flex items-center gap-6">
               {user ? (
                 <>
+                  <Link href={"/my-favorites"}>My Favorites</Link>
                   {user?.role == "admin" && (
                     <>
-                      <Link href={"/my-favorites"}>My Favorites</Link>
-
                       <Link href={"/admin"}>Admin</Link>
                     </>
                   )}
@@ -205,7 +206,10 @@ export function Header() {
       </header>
       <div className="h-16"></div>
       {openSearchWindow && (
-        <SearchWebsite onClose={() => setOpenSearchWindow(false)} />
+        <SearchWebsite
+          WebData={website}
+          onClose={() => setOpenSearchWindow(false)}
+        />
       )}
     </>
   );

@@ -56,8 +56,8 @@ export async function fetchSheetData({
     const invalidMarkers = ["#REF!", "#N/A", "Loading..."];
 
     const formattedData = dataRows.map((row: any) => ({
-      name: (row[0] || "").toString().trim(),
-      url: (row[1] || "").toString().trim(),
+      url: (row[0] || "").toString().trim(),
+      name: (row[1] || "").toString().trim(),
       description: (row[2] || "").toString().trim(),
     }));
 

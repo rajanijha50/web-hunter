@@ -1,12 +1,13 @@
 "use client";
 import { useEffect, useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { LuHeart, LuStar, LuExternalLink, LuRotateCcw } from "react-icons/lu";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
+import { SendNotification } from "@/components/feedback/SendNotification";
+import { fetchFavorites, toggleFavorite } from "@/lib/cache/favorites";
 import { WebsiteType } from "@/types/website";
 import { useUserStore } from "@/store/userStore";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { fetchFavorites, toggleFavorite } from "@/lib/api/favorites";
 
 interface ToolCardProps {
   tool: WebsiteType;
@@ -108,20 +109,18 @@ export function ToolCard({ tool, onClick }: ToolCardProps) {
             <h3 className="text-xl font-bold tracking-tight text-foreground leading-tight transition-colors line-clamp-1">
               {tool.name}
             </h3>
-            <div className="flex items-center gap-1.5 mt-1">
-              <div className="flex items-center gap-1 text-[11px] font-bold text-foreground bg-secondary px-2 py-0.5 rounded-md">
-                <LuStar className="h-2.5 w-2.5 fill-[#eab308] text-[#eab308]" />
-                <span>{(4.5 + (tool.name.length % 5) * 0.1).toFixed(1)}</span>
-              </div>
-              
-            </div>
           </div>
         </div>
         <button
-          className="rounded-full p-2 text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
+          className="flex flex-col justify-center items-center rounded-full p-2 text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive cursor-pointer"
           disabled={loading}
+          title={isFavorited ? "Dislike" : "Like"}
           onClick={(e) => {
             e.stopPropagation();
+            if (!user) {
+              SendNotification("Please login to add favorites!", "error");
+              return;
+            }
             mutation.mutate({
               user_id: user?._id!,
               website_id: tool._id,
@@ -140,7 +139,7 @@ export function ToolCard({ tool, onClick }: ToolCardProps) {
             />
           )}
           <span
-            className={`text-sm font-bold ${
+            className={`text-sm font-bold text-center ${
               isFavorited
                 ? "text-red-500 fill-red-500"
                 : "text-muted-foreground"
@@ -171,17 +170,22 @@ export function ToolCard({ tool, onClick }: ToolCardProps) {
 
       <div className="mt-auto flex items-center justify-center pt-4 border-t border-border">
         <div className="flex items-center gap-3">
-          <a
-            className="h-9 rounded-xl px-5 text-sm font-bold bg-primary text-primary-foreground hover:opacity-90 transition-all flex items-center justify-center shadow-md hover:shadow-lg active:scale-95"
-            href={
-              tool.url.startsWith("http") ? tool.url : `https://${tool.url}`
-            }
-            target="_blank"
-            onClick={(e) => e.stopPropagation()}
-          >
-            Visit
-            <LuExternalLink className="ml-2 h-3.5 w-3.5" />
-          </a>
+          {user ? (
+            <a
+              className="h-9 rounded-xl px-5 text-sm font-bold bg-primary text-primary-foreground hover:opacity-90 transition-all flex items-center justify-center shadow-md hover:shadow-lg active:scale-95"
+              href={tool.url}
+              target="_blank"
+              onClick={(e) => e.stopPropagation()}
+            >
+              Visit
+              <LuExternalLink className="ml-2 h-3.5 w-3.5" />
+            </a>
+          ) : (
+            <button className="h-9 rounded-xl px-5 text-sm font-bold bg-primary text-primary-foreground hover:opacity-90 transition-all flex items-center justify-center shadow-md hover:shadow-lg active:scale-95">
+              Visit
+              <LuExternalLink className="ml-2 h-3.5 w-3.5" />
+            </button>
+          )}
         </div>
       </div>
     </Card>

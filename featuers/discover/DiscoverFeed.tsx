@@ -10,6 +10,7 @@ import { WebsiteType } from "@/types/website";
 import { Dialog } from "@/components/ui/dialog";
 import { ToolCard } from "./tool-card";
 import { ToolModal } from "./tool-modal";
+import { Button } from "@/components/ui/button";
 
 const PAGE_SIZE = 30;
 
@@ -23,6 +24,9 @@ function DiscoverFeedContent() {
   } = useDiscoverQuery();
   const [selectedTool, setSelectedTool] = useState<WebsiteType | null>(null);
   const categoriesRef = useRef<HTMLDivElement>(null);
+  const { websites, setWebsites, loading } = useWebsiteStore();
+  const user = useUserStore((state) => state.user);
+  const [tools, setTools] = useState<WebsiteType[]>([]);
 
   const handleCategoryWheel = useCallback((e: WheelEvent) => {
     const el = categoriesRef.current;
@@ -41,14 +45,6 @@ function DiscoverFeedContent() {
     el.addEventListener("wheel", handleCategoryWheel, { passive: false });
     return () => el.removeEventListener("wheel", handleCategoryWheel);
   }, [handleCategoryWheel]);
-  const { websites, fetchWebsites, loading } = useWebsiteStore();
-  const user = useUserStore((state) => state.user);
-  const [isLoading, setIsLoading] = useState(loading);
-  const [tools, setTools] = useState<WebsiteType[]>([]);
-
-  // useEffect(() => {
-  //   fetchWebsites();
-  // }, []);
 
   useEffect(() => {
     setTools(websites);
@@ -94,37 +90,13 @@ function DiscoverFeedContent() {
     <div className="animate-slide-in-top space-y-12">
       {/* Welcome Banner */}
       <div>
-        <h1 className="text-3xl md:text-5xl font-bold tracking-tight mb-6">
+        <h1 className="hidden text-3xl md:text-5xl font-bold tracking-tight mb-6">
           Good morning, {user?.name} 👋
         </h1>
-
-        {/* Quick Filters */}
-        {/* <div className="flex flex-wrap gap-3">
-          <Button
-            variant="outline"
-            className="h-10 rounded-full px-5 text-sm font-medium gap-2 hover:bg-secondary"
-          >
-            <LuHistory />{" "}
-            Recently Viewed
-          </Button>
-          <Button
-            variant="outline"
-            className="h-10 rounded-full px-5 text-sm font-medium gap-2 hover:bg-secondary"
-          >
-            <LuHeart className="h-4 w-4 text-pink-600" />{" "}
-            My Favorites
-          </Button>
-          <Button
-            variant="outline"
-            className="h-10 rounded-full px-5 text-sm font-medium gap-2 text-primary border-primary/20 bg-primary/5 hover:bg-primary/10 transition-colors"
-          >
-            <LuCalendar className="h-4 w-4" /> New This Week
-          </Button>
-        </div> */}
       </div>
 
       {/* Featured Banner component representing the Top category "AI Tools" */}
-      <div className="rounded-3xl bg-gradient-to-r from-[#2B3252] to-[#5B58F2] overflow-hidden relative shadow-lg">
+      <div className="hidden rounded-3xl bg-gradient-to-r from-[#2B3252] to-[#5B58F2] overflow-hidden relative shadow-lg">
         <div className="absolute inset-0 bg-[url('https://picsum.photos/seed/abstract-bg/1200/400')] opacity-10 mix-blend-overlay" />
         <div className="p-10 md:p-14 relative z-10 flex flex-col md:flex-row gap-8 items-center md:items-start">
           <div className="h-24 w-24 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/20 shadow-xl shrink-0">
@@ -170,17 +142,34 @@ function DiscoverFeedContent() {
               ({totalTools} total)
             </span>
           </div>
-          {/* <div className="flex items-center gap-2 text-sm font-medium bg-muted/50 p-1.5 rounded-xl border border-border/50 shadow-inner">
-            <button className="px-4 py-1.5 bg-background shadow-sm rounded-lg text-foreground font-semibold">
-              Popular
-            </button>
-            <button className="px-4 py-1.5 text-muted-foreground hover:text-foreground transition-colors rounded-lg">
-              New
-            </button>
-            <button className="px-4 py-1.5 text-muted-foreground hover:text-foreground transition-colors rounded-lg">
-              Alpha
-            </button>
-          </div> */}
+
+          <div className="flex items-center gap-2 text-sm font-medium rounded-xl">
+            <div>
+              <select
+                name="sortby"
+                id="sortby"
+                value={sortby}
+                className="border border-border/50 rounded-xl px-2 py-2 text-primary dark:text-foreground bg-background"
+                onChange={(e) => setQuery({ sortby: e.target.value })}
+              >
+                <option value="Latest">Latest</option>
+                <option value="Oldest">Oldest</option>
+                <option value="Popular">Popular</option>
+              </select>
+            </div>
+            {(activeCategory !== "All AI" || sortby !== "Latest") && (
+              <Button
+                className="text-primary dark:text-foreground hover:bg-primary/20"
+                variant="ghost"
+                size="sm"
+                onClick={() =>
+                  setQuery({ category: "All AI", sortby: "Latest" })
+                }
+              >
+                Clear all
+              </Button>
+            )}
+          </div>
         </div>
 
         {/* Categories */}
@@ -204,7 +193,7 @@ function DiscoverFeedContent() {
         </div>
 
         {/* Grid */}
-        {isLoading ? (
+        {loading ? (
           <div className="flex flex-col items-center justify-center py-24 gap-4">
             <LuLoaderCircle className="h-12 w-12 animate-spin text-primary opacity-20" />
             <span className="text-sm font-medium text-muted-foreground animate-pulse">
@@ -243,11 +232,11 @@ function DiscoverFeedContent() {
       </div>
 
       {/* Detail Modal Overlay */}
-      <Dialog
-        open={!!selectedTool}
-        onOpenChange={(open) => !open && setSelectedTool(null)}
-      >
-        {selectedTool && user?.role === "admin" && (
+      {selectedTool && user?.role === "admin" && (
+        <Dialog
+          open={!!selectedTool}
+          onOpenChange={(open) => !open && setSelectedTool(null)}
+        >
           <ToolModal
             tool={selectedTool}
             onUpdate={(updated) => {
@@ -264,8 +253,8 @@ function DiscoverFeedContent() {
               }, 3000);
             }}
           />
-        )}
-      </Dialog>
+        </Dialog>
+      )}
     </div>
   );
 }

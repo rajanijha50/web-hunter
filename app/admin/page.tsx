@@ -1,7 +1,8 @@
 "use client";
+import { SendNotification } from "@/components/feedback/SendNotification";
 import InsertAI from "@/featuers/admin/InsertAI";
 import InsertManual from "@/featuers/admin/InsertManual";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   LuPlus,
   LuSparkles,
@@ -16,6 +17,11 @@ export default function AdminPage() {
     type: "success" | "error";
     message: string;
   } | null>(null);
+
+  useEffect(() => {
+    if (!status) return;
+    SendNotification(status?.message, status?.type);
+  }, [status]);
 
   return (
     <div className="container mx-auto px-4 max-w-6xl">
@@ -50,23 +56,6 @@ export default function AdminPage() {
           <LuSparkles className="h-4 w-4" /> AI Bulk Import
         </button>
       </div>
-
-      {status && (
-        <div
-          className={`mb-6 p-4 rounded-xl border flex items-center gap-3 animate-in fade-in slide-in-from-top-2 ${
-            status.type === "success"
-              ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-600 dark:text-emerald-400"
-              : "bg-rose-500/10 border-rose-500/20 text-rose-600 dark:text-rose-400"
-          }`}
-        >
-          {status.type === "success" ? (
-            <LuCheck className="h-5 w-5" />
-          ) : (
-            <LuX className="h-5 w-5" />
-          )}
-          <p className="text-sm font-medium">{status.message}</p>
-        </div>
-      )}
 
       {activeTab === "manual" ? (
         <InsertManual

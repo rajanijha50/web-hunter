@@ -1,18 +1,11 @@
-"use client"
+"use client";
 import { useUserStore } from "@/store/userStore";
 import Link from "next/link";
 import { FaGithub, FaInstagram, FaLinkedin } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
 
 export default function Footer() {
-
-  const user = useUserStore((state) => state.user)
-  const pages = [
-    { name: "my favorites", href: "/my-favorites" },
-    { name: "about", href: "/about" },
-    // { name: "feedback", href: "/feedback" },
-    // { name: "contribute", href: "/contribute" },
-  ];
+  const user = useUserStore((state) => state.user);
 
   const social = [
     {
@@ -75,26 +68,45 @@ export default function Footer() {
           <div className="flex flex-col mx-auto w-full md:max-w-1/2">
             <h5 className="font-bold mb-4 uppercase">Pages</h5>
             <div className="flex flex-col text-sm gap-2">
-              {pages.map((page, idx) => (
-                <Link href={page.href} key={idx} className="capitalize hover:underline w-fit">
-                  {page.name}
+              {user && (
+                <Link
+                  href="/favorites"
+                  className="capitalize hover:underline w-fit"
+                >
+                  My Favorites
                 </Link>
-              ))}
+              )}
+
+              <Link href="/about" className="capitalize hover:underline w-fit">
+                About
+              </Link>
             </div>
           </div>
-          
         </div>
 
         {/* bottom part */}
         <div className="container mx-auto max-w-6xl mt-16 pt-8 border-t border-border text-[10px] flex flex-col md:flex-row justify-between items-center gap-4 uppercase tracking-widest">
           <span>
-            © {new Date().getFullYear()} <Link href="/" className="font-semibold cursor-pointer transition-all duration-200 hover:underline">Web Hunter</Link>. Discovery Redefined.
+            © {new Date().getFullYear()}{" "}
+            <Link
+              href="/"
+              className="font-semibold cursor-pointer transition-all duration-200 hover:underline"
+            >
+              Web Hunter
+            </Link>
+            . Discovery Redefined.
           </span>
           <div className="flex gap-8">
-            <Link href={"/"} className="hover:underline cursor-pointer transition-all duration-200">
+            <Link
+              href={"/"}
+              className="hover:underline cursor-pointer transition-all duration-200"
+            >
               Privacy
             </Link>
-            <Link href={"/"} className="hover:underline cursor-pointer transition-all duration-200">
+            <Link
+              href={"/"}
+              className="hover:underline cursor-pointer transition-all duration-200"
+            >
               Terms
             </Link>
           </div>

@@ -13,14 +13,14 @@ export const CATEGORIES = [
   'AI Video',
   'AI Voice',
   'AI Writing',
-  'Analytics',        // ➕ new
+  'Analytics',         
   'Anime',
-  'API',              // ➕ new
+  'API',               
   'Article',
-  'Automation',       // ➕ new
+  'Automation',        
   'Biology',
   'Books',
-  'Browser Extension',// ➕ new
+  'Browser Extension', 
   'Car Tools',
   'Cheatsheets',
   'Chemistry',
@@ -28,14 +28,14 @@ export const CATEGORIES = [
   'Comparison',
   'Cooking',
   'Courses',
-  'Database',         // ➕ new
+  'Database',          
   'Data Sharing',
   'Design',
-  'E-commerce',       // ➕ new
+  'E-commerce',        
   'Education',
   'Entertainment',
   'Fashion',
-  'Finance',          // ➕ new
+  'Finance',           
   'Fitness',
   'Food',
   'Formula',
@@ -43,14 +43,14 @@ export const CATEGORIES = [
   'Freemium',
   'Fun',
   'Gaming',
-  'Health',           // ➕ new
+  'Health',            
   'History',
   'Hosting',
   'Icons',
   'Image',
   'Image Editing',
   'Image Tool',
-  'Language Learning',// ➕ new
+  'Language Learning', 
   'LLM',
   'Login Required',
   'Logo Creation',
@@ -59,13 +59,13 @@ export const CATEGORIES = [
   'Movie',
   'Music',
   'News',
-  'No Code',          // ➕ new
+  'No Code',           
   'No Login Required',
-  'Open Source',      // ➕ new
+  'Open Source',       
   'PDF',
   'PDF Editing',
-  'Photography',      // ➕ new
-  'Podcast',          // ➕ new
+  'Photography',       
+  'Podcast',           
   'Presentation',
   'Premium',
   'Privacy and Security',
@@ -81,7 +81,7 @@ export const CATEGORIES = [
   'Study Notes',
   'Summarizer',
   'Teaching',
-  'Templates',        // ➕ new
+  'Templates',         
   'Tools',
   'Translation',
   'Travelling',
