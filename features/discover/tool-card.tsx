@@ -173,7 +173,11 @@ export function ToolCard({ tool, onClick }: ToolCardProps) {
           {user ? (
             <a
               className="h-9 rounded-xl px-5 text-sm font-bold bg-primary text-primary-foreground hover:opacity-90 transition-all flex items-center justify-center shadow-md hover:shadow-lg active:scale-95"
-              href={tool.url}
+              href={
+                tool.url.startsWith("http://") || tool.url.startsWith("https://")
+                  ? tool.url
+                  : `https://${tool.url}`
+              }
               target="_blank"
               onClick={(e) => e.stopPropagation()}
             >
