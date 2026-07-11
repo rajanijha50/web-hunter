@@ -36,8 +36,8 @@ export default function Footer() {
       <footer className="text-sm bg-background text-primary dark:text-foreground py-16 border-t border-border px-4">
         <div className="container mx-auto max-w-6xl flex flex-col md:flex-row gap-8 p-5 md:p-10">
           <div className="w-full md:max-w-1/2">
-            <Link href="/" className="flex items-center space-x-2 mb-4">
-              <span className="font-bold text-2xl tracking-tight">
+            <Link href="/" className="text-2xl md:text-3xl flex items-center space-x-2 mb-4">
+              <span className="font-bold tracking-tight">
                 Web
                 <span className="font-medium text-muted-foreground">
                   Hunter

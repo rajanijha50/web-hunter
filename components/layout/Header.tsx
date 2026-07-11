@@ -44,8 +44,8 @@ export function Header() {
         <div className="container flex h-16 items-center justify-between px-4 md:px-8 mx-auto">
           {/* site logo */}
           <div className="flex items-center gap-6">
-            <Link href="/" className="flex items-center space-x-2">
-              <span className="font-bold text-xl tracking-tight">
+            <Link href="/" className="flex text-2xl md:text-3xl items-center space-x-2">
+              <span className="font-bold tracking-tight">
                 Web
                 <span className="font-medium text-muted-foreground">
                   Hunter
