@@ -33,7 +33,7 @@ export default function SearchWebsite({
           tag.toLowerCase().includes(value.toLowerCase()),
         ),
     );
-    setNoResults(filteredResults.length == 0)
+    setNoResults(filteredResults.length == 0);
     setResults(filteredResults);
   };
 
@@ -68,7 +68,12 @@ export default function SearchWebsite({
             placeholder="Search..."
             className="w-full border-none rounded-full bg-muted/50 px-3 py-2 text-sm pl-10 focus:ring-0 focus:outline-primary"
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={(e) => {
+              setSearchQuery(e.target.value);
+              setResults([]);
+              setNoResults(false);
+              handleSearch(e.target.value)
+            }}
             onKeyDown={(e) => e.key === "Enter" && handleSearch(searchQuery)}
           />
           <Button
