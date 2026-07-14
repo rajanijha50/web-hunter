@@ -1,4 +1,3 @@
-import type { Metadata } from "next";
 import { Inter, Poppins } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
@@ -13,10 +12,6 @@ const poppins = Poppins({
   variable: "--font-poppins",
 });
 
-export const metadata: Metadata = {
-  title: "Web Hunter",
-  description: "Curated niche collection of AI tools",
-};
 
 export default function RootLayout({
   children,

@@ -1,24 +1,21 @@
-"use client";
-import { Header } from "@/components/layout/Header";
-import { useEffect } from "react";
-import Footer from "@/components/layout/Footer";
-import { useUserStore } from "@/store/userStore";
-import Authenticated from "@/components/layout/Authenticated";
-import Anonymous from "@/components/layout/Anonymous";
-import { useWebsiteStore } from "@/store/websiteStore";
+import { Metadata } from "next";
+import HomeClient from "./home-client";
+
+export const metadata: Metadata = {
+  title: "Web Hunter — Discover Useful Websites",
+  description:
+    "Curated collection of useful websites organized by category.",
+  openGraph: {
+    title: "Web Hunter — Discover Useful Websites",
+    description:
+      "Curated collection of useful websites organized by category.",
+    url: `${process.env.NEXT_PUBLIC_SITE_URL}`,
+  },
+  icons: {
+    icon: ["/favicon.ico"],
+  },
+};
 
 export default function Page() {
-  const user = useUserStore((state) => state.user);
-  const {fetchWebsites} = useWebsiteStore()
-
-  useEffect(() => {
-    fetchWebsites()
-  }, [])
-  return (
-    <>
-      <Header />
-      {user ? <Authenticated /> : <Anonymous />}
-      <Footer />
-    </>
-  );
+  return <HomeClient />;
 }

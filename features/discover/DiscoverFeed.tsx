@@ -231,6 +231,26 @@ function DiscoverFeedContent() {
         )}
       </div>
 
+      
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "ItemList",
+            "name": activeCategory === "All AI" ? "AI Productivity Tools" : `${activeCategory} AI Tools`,
+            "itemListElement": paginatedTools.map((w, i) => ({
+              "@type": "ListItem",
+              "position": startIndex + i + 1,
+              "name": w.name,
+              "url": w.url.startsWith("http://") || w.url.startsWith("https://")
+                ? w.url
+                : `https://${w.url}`,
+            })),
+          }),
+        }}
+      />
+
       {/* Detail Modal Overlay */}
       {selectedTool && user?.role === "admin" && (
         <Dialog
