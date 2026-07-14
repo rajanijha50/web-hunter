@@ -2,9 +2,7 @@
 
 export default function LandingPage() {
   return (
-    <div className="animate-slide-in-top min-h-screen bg-background text-foreground selection:bg-primary/30">
-      {/* Hero Section */}
-      <section className="relative pt-24 pb-32 overflow-hidden flex flex-col items-center justify-center text-center px-4">
+      <section className="animate-fade-in relative pt-24 pb-32 overflow-hidden flex flex-col items-center justify-center text-center px-4">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/20 via-background to-background pointer-events-none" />
 
         <div className="inline-flex items-center gap-2 px-3 py-1 text-xs font-medium bg-amber-400/10 text-amber-400 rounded-full border border-amber-400/20 mb-8 z-10">
@@ -28,6 +26,6 @@ export default function LandingPage() {
 
         
       </section>
-    </div>
+
   );
 }

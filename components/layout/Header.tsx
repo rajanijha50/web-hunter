@@ -39,11 +39,12 @@ export function Header() {
   return (
     <>
       <header
+        
         className={`animate-slide-in-top fixed top-0 left-0 right-0 z-50 backdrop-blur-md md:border-b transition-all text-primary dark:text-foreground`}
       >
         <div className="container flex h-16 items-center justify-between px-4 md:px-8 mx-auto">
           {/* site logo */}
-          <div className="flex items-center gap-6">
+          <div role="banner" className="flex items-center gap-6">
             <Link href="/" className="flex text-2xl md:text-3xl items-center space-x-2">
               <span className="font-bold tracking-tight">
                 Web

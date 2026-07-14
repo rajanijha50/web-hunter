@@ -17,6 +17,8 @@ export default function Testimonials() {
           <div className="grid md:grid-cols-3 gap-8">
             {TESTIMONIALS.map((t, i) => (
               <div
+                role="article"
+                aria-label={t.name}
                 key={t._id}
                 className="bg-muted/30 border border-border rounded-3xl p-8 relative"
               >

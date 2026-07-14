@@ -1,12 +1,28 @@
 "use client";
 
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { motion } from "framer-motion";
 import { LuChrome, LuSearch, LuShieldCheck } from "react-icons/lu";
+import { useUserStore } from "@/store/userStore";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 export default function LoginPage() {
+  const session = useSession()
+  const user = session.data?.user
+  const router = useRouter()
+
+  useEffect(() => {
+    if (user) {
+      console.log(user)
+      router.push("/");
+    }
+  }, [user])
+
+
   const handleSignIn = (provider: string) => {
     signIn(provider, { callbackUrl: "/" });
   };
@@ -24,18 +40,11 @@ export default function LoginPage() {
         transition={{ duration: 0.5 }}
         className="z-10 w-full max-w-md px-4"
       >
-        <div className="flex justify-center mb-8">
-            <div className="p-3 bg-white/5 rounded-2xl border border-white/10 backdrop-blur-xl">
-                <LuSearch className="w-10 h-10 text-blue-500" />
-            </div>
-        </div>
+
 
         <Card className="border-white/10 bg-black/40 backdrop-blur-2xl shadow-2xl overflow-hidden">
           <div className="h-1.5 w-full bg-gradient-to-r from-blue-500 via-purple-500 to-cyan-500" />
           <CardHeader className="text-center pt-8 pb-4">
-            <CardTitle className="text-3xl font-bold tracking-tight text-white">
-              Welcome Back
-            </CardTitle>
             <CardDescription className="text-zinc-400 text-base">
               Sign in to your account to continue
             </CardDescription>
@@ -47,7 +56,7 @@ export default function LoginPage() {
               onClick={() => handleSignIn("google")}
               className="w-full h-12 bg-white/5 hover:bg-white/10 border-white/10 text-white transition-all duration-300 flex items-center justify-center gap-3 text-base"
             >
-              <GoogleIcon />
+              <Image src="/assets/icons/google.svg" alt="google" width={24} height={24} />
               Continue with Google
             </Button>
 
@@ -56,62 +65,20 @@ export default function LoginPage() {
               onClick={() => handleSignIn("azure-ad")}
               className="w-full h-12 bg-white/5 hover:bg-white/10 border-white/10 text-white transition-all duration-300 flex items-center justify-center gap-3 text-base"
             >
-              <MicrosoftIcon />
+              <Image src="/assets/icons/microsoft.svg" alt="microsoft" width={25} height={25} />
               Continue with Microsoft
             </Button>
 
             <div className="pt-6 text-center">
-                <p className="text-xs text-zinc-500 flex items-center justify-center gap-1.5">
-                    <LuShieldCheck className="w-3.5 h-3.5" />
-                    Secure authentication via OAuth 2.0
-                </p>
+              <p className="text-xs text-zinc-500 flex items-center justify-center gap-1.5">
+                <LuShieldCheck className="w-3.5 h-3.5" />
+                Secure authentication via OAuth 2.0
+              </p>
             </div>
           </CardContent>
         </Card>
-
-        <p className="mt-8 text-center text-sm text-zinc-500">
-          New here? Registration is automatic when you sign in.
-        </p>
       </motion.div>
     </div>
   );
 }
 
-function GoogleIcon() {
-  return (
-    <svg className="w-5 h-5" viewBox="0 0 24 24">
-      <path
-        fill="currentColor"
-        d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-      />
-      <path
-        fill="#34A853"
-        d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-      />
-      <path
-        fill="#FBBC05"
-        d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"
-      />
-      <path
-        fill="#EA4335"
-        d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 12-4.53z"
-      />
-    </svg>
-  );
-}
-
-function MicrosoftIcon() {
-  return (
-    <svg className="w-5 h-5" viewBox="0 0 23 23">
-        <path fill="#f3f3f3" d="M0 0h11v11H0z"/>
-        <path fill="#f3f3f3" d="M12 0h11v11H12z"/>
-        <path fill="#f3f3f3" d="M0 12h11v23H0z"/>
-        <path fill="#f3f3f3" d="M12 12h11v23H12z"/>
-        {/* Actual colors for better look if desired, but grayscale matches the premium feel */}
-        <path fill="#f25022" d="M0 0h11v11H0z" className="opacity-80"/>
-        <path fill="#7fbb00" d="M12 0h11v11H12z" className="opacity-80"/>
-        <path fill="#00a1f1" d="M0 12h11v11H0z" className="opacity-80"/>
-        <path fill="#ffbb00" d="M12 12h11v11H12z" className="opacity-80"/>
-    </svg>
-  );
-}

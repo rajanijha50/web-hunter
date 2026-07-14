@@ -106,7 +106,7 @@ export function ToolCard({ tool, onClick }: ToolCardProps) {
             )}
           </div>
           <div>
-            <h3 className="text-xl font-bold tracking-tight text-foreground leading-tight transition-colors line-clamp-1">
+            <h3 title={tool.name} className="text-xl font-bold tracking-tight text-foreground leading-tight transition-colors line-clamp-1">
               {tool.name}
             </h3>
           </div>
@@ -131,19 +131,17 @@ export function ToolCard({ tool, onClick }: ToolCardProps) {
             <LuRotateCcw className="h-4 w-4 animate-spin" />
           ) : (
             <LuHeart
-              className={`h-4 w-4 ${
-                isFavorited
+              className={`h-4 w-4 ${isFavorited
                   ? "text-red-500 fill-red-500"
                   : "text-muted-foreground"
-              }`}
+                }`}
             />
           )}
           <span
-            className={`text-sm font-bold text-center ${
-              isFavorited
+            className={`text-sm font-bold text-center ${isFavorited
                 ? "text-red-500 fill-red-500"
                 : "text-muted-foreground"
-            }`}
+              }`}
           >
             {LikeCount}
           </span>
