@@ -21,6 +21,7 @@ export const CATEGORIES = [
   "Biology",
   "Books",
   "Browser Extension",
+  "Business",
   "Car Tools",
   "Cheatsheets",
   "Chemistry",

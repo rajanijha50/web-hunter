@@ -85,10 +85,24 @@ export async function fetchSheetData({
 
     //console.log("filtered Data", filteredData.slice(0, 5));
 
+    // Deduplicate by URL — keep only the first occurrence of each URL
+    const seenUrls = new Set<string>();
+    const deduplicatedData = filteredData.filter((item: any) => {
+      const normalizedUrl = item.url.toLowerCase().trim();
+      if (seenUrls.has(normalizedUrl)) return false;
+      seenUrls.add(normalizedUrl);
+      return true;
+    });
+
+    const removedCount = filteredData.length - deduplicatedData.length;
+    if (removedCount > 0) {
+      console.log(`Removed ${removedCount} duplicate URL(s) from sheet data.`);
+    }
+
     return {
       success: true,
       message: "Data fetched successfully",
-      data: filteredData,
+      data: deduplicatedData,
     };
   } catch (error: any) {
     console.error("Error fetching sheet data:", error);

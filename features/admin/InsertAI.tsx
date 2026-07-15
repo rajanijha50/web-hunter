@@ -9,6 +9,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Dialog } from "@/components/ui/dialog";
+import { ToolModal } from "@/features/discover/tool-modal";
 import { RiDeleteBinFill } from "react-icons/ri";
 import {
   LuLoaderCircle,
@@ -16,7 +18,9 @@ import {
   LuSparkles,
   LuCheck,
   LuExternalLink,
+  LuPencil,
 } from "react-icons/lu";
+import { WebsiteType } from "@/types/website";
 
 interface AiInsertProps {
   isLoading: boolean;
@@ -26,12 +30,37 @@ interface AiInsertProps {
   ) => void;
 }
 
+type PreviewTool = {
+  name: string;
+  url: string;
+  description: string;
+  tags: string[];
+  isPremium: boolean;
+};
+
+/** Convert a preview tool (no DB fields) into a shape ToolModal accepts */
+function toWebsiteType(tool: PreviewTool, idx: number): WebsiteType {
+  return {
+    _id: `preview-${idx}`,
+    name: tool.name,
+    url: tool.url,
+    description: tool.description,
+    tags: tool.tags,
+    isPremium: tool.isPremium,
+    likesCount: 0,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  };
+}
+
 export default function InsertAI({
   isLoading,
   setIsLoading,
   setStatus,
 }: AiInsertProps) {
-  const [previewData, setPreviewData] = useState<any[]>([]);
+  const [previewData, setPreviewData] = useState<PreviewTool[]>([]);
+  const [editingIdx, setEditingIdx] = useState<number | null>(null);
+
   const [bulkOptions, setBulkOptions] = useState({
     sheetId: "",
     range: "Sheet1!A:C",
@@ -39,16 +68,17 @@ export default function InsertAI({
     startingLetter: "",
   });
   const FocusRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     if (previewData && previewData.length > 0) {
       FocusRef.current?.scrollIntoView({ behavior: "smooth" });
-      // console.log("preview: ", previewData[0]);
     }
   }, [previewData]);
 
   const fetchAIPreview = async () => {
     setIsLoading(true);
     setStatus(null);
+    setEditingIdx(null);
     try {
       const res = await fetch("/api/admin/bulk/preview", {
         method: "POST",
@@ -85,8 +115,47 @@ export default function InsertAI({
       setIsLoading(false);
     }
   };
+
+  /** Called by ToolModal's save — update the item at editingIdx */
+  const handleUpdate = (updated: WebsiteType) => {
+    if (editingIdx === null) return;
+    setPreviewData((prev) =>
+      prev.map((tool, i) =>
+        i === editingIdx
+          ? {
+              ...tool,
+              name: updated.name,
+              url: updated.url,
+              description: updated.description,
+              tags: updated.tags,
+              isPremium: updated.isPremium,
+            }
+          : tool,
+      ),
+    );
+    setEditingIdx(null);
+  };
+
+  /** Called by ToolModal's delete — remove the item at editingIdx */
+  const handleDelete = (_id: string) => {
+    if (editingIdx === null) return;
+    setPreviewData((prev) => prev.filter((_, i) => i !== editingIdx));
+    setEditingIdx(null);
+  };
+
   return (
     <div className="space-y-8">
+      {/* ── Edit Dialog ───────────────────────────────────── */}
+      {editingIdx !== null && (
+        <Dialog open onOpenChange={(open) => !open && setEditingIdx(null)}>
+          <ToolModal
+            tool={toWebsiteType(previewData[editingIdx], editingIdx)}
+            onUpdate={handleUpdate}
+            onDelete={handleDelete}
+          />
+        </Dialog>
+      )}
+
       <Card className="border shadow-xl bg-card/50 backdrop-blur-sm">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 italic font-black">
@@ -177,7 +246,7 @@ export default function InsertAI({
                 <LuLoaderCircle className="h-5 w-5 animate-spin" />
               ) : (
                 <>
-                  Fetch & Analyze with AI <LuSparkles className="h-4 w-4" />
+                  Fetch &amp; Analyze with AI <LuSparkles className="h-4 w-4" />
                 </>
               )}
             </Button>
@@ -186,7 +255,7 @@ export default function InsertAI({
       </Card>
 
       {previewData.length > 0 && (
-        <div ref = {FocusRef} className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+        <div ref={FocusRef} className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
           <div className="flex items-center justify-between">
             <h2 className="text-2xl font-bold flex items-center gap-2 tracking-tight">
               Preview Generated Results{" "}
@@ -218,7 +287,7 @@ export default function InsertAI({
                     <th className="px-6 py-4">Tool Info</th>
                     <th className="px-6 py-4">Description</th>
                     <th className="px-6 py-4">AI Tags</th>
-                    <th className="px-12 py-4">Action(remove)</th>
+                    <th className="px-6 py-4 text-center">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border/50">
@@ -227,7 +296,7 @@ export default function InsertAI({
                       key={idx}
                       className="group hover:bg-muted/20 transition-colors"
                     >
-                      <td className="px-6 py-6 font-medium align-top whitespace-nowrap">
+                      <td className="px-6 py-6 font-medium align-top whitespace-nowrap text-muted-foreground">
                         {idx + 1}
                       </td>
                       <td className="px-6 py-6 font-medium align-top whitespace-nowrap">
@@ -265,19 +334,30 @@ export default function InsertAI({
                         </div>
                       </td>
                       <td className="px-6 py-6 align-top">
-                        <Button
-                          title="Remove Tool"
-                          variant="ghost"
-                          size="sm"
-                          className="h-8 w-8 rounded-full p-0 text-rose-500 hover:text-rose-600 hover:bg-rose-100"
-                          onClick={() =>
-                            setPreviewData((prev) =>
-                              prev.filter((_, i) => i !== idx),
-                            )
-                          }
-                        >
-                          <RiDeleteBinFill className="h-4 w-4" />
-                        </Button>
+                        <div className="flex items-center gap-1.5 justify-center">
+                          <Button
+                            title="Edit Tool"
+                            variant="ghost"
+                            size="sm"
+                            className="h-8 w-8 rounded-full p-0 text-sky-500 hover:text-sky-600 hover:bg-sky-100"
+                            onClick={() => setEditingIdx(idx)}
+                          >
+                            <LuPencil className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            title="Remove Tool"
+                            variant="ghost"
+                            size="sm"
+                            className="h-8 w-8 rounded-full p-0 text-rose-500 hover:text-rose-600 hover:bg-rose-100"
+                            onClick={() =>
+                              setPreviewData((prev) =>
+                                prev.filter((_, i) => i !== idx),
+                              )
+                            }
+                          >
+                            <RiDeleteBinFill className="h-4 w-4" />
+                          </Button>
+                        </div>
                       </td>
                     </tr>
                   ))}

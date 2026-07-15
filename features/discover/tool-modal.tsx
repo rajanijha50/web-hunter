@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 import { LuLoaderCircle, LuSave, LuX, LuCheck, LuTrash } from "react-icons/lu";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -17,6 +18,8 @@ interface ToolModalProps {
 export function ToolModal({ tool, onUpdate, onDelete }: ToolModalProps) {
   const user = useUserStore((state) => state.user);
   const isAdmin = user?.role === "admin";
+  const pathname = usePathname();
+  const isPreviewMode = pathname?.startsWith("/admin");
 
   const [form, setForm] = useState({
     name: tool.name,
@@ -55,6 +58,14 @@ export function ToolModal({ tool, onUpdate, onDelete }: ToolModalProps) {
     setIsLoading(true);
     setStatus(null);
 
+    // In preview/admin mode the item is not in the DB yet — update locally only
+    if (isPreviewMode) {
+      onUpdate?.({ ...tool, ...form });
+      setStatus({ type: "success", message: "Tool updated in preview!" });
+      setIsLoading(false);
+      return;
+    }
+
     try {
       const res = await fetch("/api/admin/manual", {
         method: "PUT",
@@ -75,6 +86,14 @@ export function ToolModal({ tool, onUpdate, onDelete }: ToolModalProps) {
 
   const deleteTool = async () => {
     if (!user) return;
+
+    // In preview/admin mode the item is not in the DB yet — remove locally only
+    if (isPreviewMode) {
+      onDelete?.(tool._id);
+      setStatus({ type: "success", message: "Tool removed from preview!" });
+      return;
+    }
+
     try {
       const res = await fetch("/api/admin/manual", {
         method: "DELETE",
