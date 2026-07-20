@@ -25,7 +25,7 @@ async function getTagsBatch(tools: SheetRow[]): Promise<any> {
     2. assign relevant tags based on other details of that item. max 5 tags
     3. remove unwanted things(icons, emojis, etc.) from the description. and make it short like a description of tool. and make sure it is in english language only. if not, translate it to english
     
-    Allowed Categories (Use ONLY these tags):
+    Allowed Tags you can use. You can only choose from this list only. Don't make tags by yourself:
     [${CATEGORIES.join(", ")}]
 
     Input Tools:
@@ -33,11 +33,11 @@ async function getTagsBatch(tools: SheetRow[]): Promise<any> {
 
     Return ONLY a JSON array where each element is an object of name and tags. where array of strings representing the tags for the corresponding tool. No explanation how you did it. No anything else. just give the json array output.
     Example JSON Output:
-    {[
-      { name: "AI Tools", tags: ["AI Tools", "Productivity"] },
-      { name: "Design", tags: ["Design", "UI"] },
-      { name: "AI Writing", tags: ["AI Writing", "Education"] }
-    ]}
+    [
+      { "name": "AI Tools", "tags": ["AI Tools", "Productivity"] },
+      { "name": "Design", "tags": ["Design", "UI"] },
+      { "name": "AI Writing", "tags": ["AI Writing", "Education"] }
+    ]
   `;
 
   async function getGroqChatCompletion() {
