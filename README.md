@@ -1,4 +1,4 @@
-# [Web Hunter](https://webhunterrr.vercel.app)
+# [Web Hunter](https://webhunter.space)
 
 A curated web directory with AI-assisted bulk curation via Groq + Google Sheets, fuzzy search, and a React Query-powered favorites system.
 
