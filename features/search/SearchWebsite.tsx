@@ -65,8 +65,8 @@ export default function SearchWebsite({
           <input
             type="text"
             autoFocus
-            placeholder="Search..."
-            className="w-full border-none rounded-full bg-muted/50 px-3 py-2 text-sm pl-10 focus:ring-0 focus:outline-primary"
+            placeholder="Search Website..."
+            className="w-full rounded-full px-3 py-2 text-sm pl-10 outline-1"
             value={searchQuery}
             onChange={(e) => {
               setSearchQuery(e.target.value);
@@ -96,12 +96,13 @@ export default function SearchWebsite({
       </div>
 
       {/* Close button */}
-      <button
+      <Button
+        variant="ghost"
         onClick={() => onClose()}
         className="absolute top-4 right-4 z-20 bg-primary text-primary-foreground text-lg font-semibold rounded-xl px-4 py-2 transition-all hover:bg-primary/90 shadow-lg"
       >
         <LuX />
-      </button>
+      </Button>
     </div>
   );
 }

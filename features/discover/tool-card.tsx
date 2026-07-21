@@ -132,15 +132,15 @@ export function ToolCard({ tool, onClick }: ToolCardProps) {
           ) : (
             <LuHeart
               className={`h-4 w-4 ${isFavorited
-                  ? "text-red-500 fill-red-500"
-                  : "text-muted-foreground"
+                ? "text-red-500 fill-red-500"
+                : "text-muted-foreground"
                 }`}
             />
           )}
           <span
             className={`text-sm font-bold text-center ${isFavorited
-                ? "text-red-500 fill-red-500"
-                : "text-muted-foreground"
+              ? "text-red-500 fill-red-500"
+              : "text-muted-foreground"
               }`}
           >
             {LikeCount}
@@ -183,7 +183,15 @@ export function ToolCard({ tool, onClick }: ToolCardProps) {
               <LuExternalLink className="ml-2 h-3.5 w-3.5" />
             </a>
           ) : (
-            <button className="h-9 rounded-xl px-5 text-sm font-bold bg-primary text-primary-foreground hover:opacity-90 transition-all flex items-center justify-center shadow-md hover:shadow-lg active:scale-95">
+            <button className="h-9 rounded-xl px-5 text-sm font-bold bg-primary text-primary-foreground hover:opacity-90 transition-all flex items-center justify-center shadow-md hover:shadow-lg active:scale-95"
+              onClick={(e) => {
+                e.stopPropagation();
+                if (!user) {
+                  SendNotification("Please login to visit website!", "error");
+                  return;
+                }
+              }}
+            >
               Visit
               <LuExternalLink className="ml-2 h-3.5 w-3.5" />
             </button>

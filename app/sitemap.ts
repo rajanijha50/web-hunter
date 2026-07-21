@@ -2,7 +2,7 @@ import { MetadataRoute } from "next";
 import { CATEGORIES } from "@/lib/data";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const domain = process.env.NEXT_PUBLIC_SITE_URL ?? "https://webhunterrr.vercel.app/";
+  const domain = process.env.NEXT_PUBLIC_SITE_URL ?? "https://webhunterrr.vercel.app";
   const now = new Date();
 
   const staticRoutes: MetadataRoute.Sitemap = [

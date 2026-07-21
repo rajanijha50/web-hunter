@@ -10,7 +10,7 @@ export const metadata: Metadata = {
     url: `${process.env.NEXT_PUBLIC_SITE_URL}/admin`,
   },
   icons: {
-    icon: ["/favicon.ico"],
+    icon: [`${process.env.NEXT_PUBLIC_SITE_URL}/favicon.ico`],
   },
 };
 

@@ -42,7 +42,7 @@ export function Header() {
         
         className={`animate-slide-in-top fixed top-0 left-0 right-0 z-50 backdrop-blur-md md:border-b transition-all text-primary dark:text-foreground`}
       >
-        <div className="container flex h-16 items-center justify-between px-4 md:px-8 mx-auto">
+        <div className=" flex h-16 items-center justify-between px-4 lg:px-8 mx-auto">
           {/* site logo */}
           <div role="banner" className="flex items-center gap-6">
             <Link href="/" className="flex text-2xl md:text-3xl items-center space-x-2">
@@ -61,11 +61,11 @@ export function Header() {
               <LuSearch className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4" />
               <input
                 type="search"
-                placeholder="Press / to toggle search"
+                placeholder="Press '/' to toggle search"
                 aria-label="Search websites"
                 readOnly
                 onClick={() => setOpenSearchWindow(true)}
-                className="pl-10 border p-4 rounded-full cursor-pointer text-sm"
+                className="placeholder:text-primary dark:placeholder:text-foreground pl-10 border p-4 rounded-full cursor-pointer text-sm focus:outline-none"
               />
             </div>
           )}
