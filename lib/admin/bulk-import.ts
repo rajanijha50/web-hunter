@@ -21,7 +21,7 @@ async function getTagsBatch(tools: SheetRow[]): Promise<any> {
 
   const prompt = `
     You are an AI categorization and filtering assistant. For each item in the given list, your task is to:
-    1. modify the existing name, or generate a new clean name for the item (tool/website). by identifying other details of item. it should be short like a name
+    1. Extract only the clean website/brand name from this title. Remove all page titles, separators (| - · – —), emojis, special characters, and filler words (Home, Welcome, Official, etc.). Return only the name.
     2. assign relevant tags based on other details of that item. max 5 tags
     3. remove unwanted things(icons, emojis, etc.) from the description. and make it short like a description of tool. and make sure it is in english language only. if not, translate it to english
     
