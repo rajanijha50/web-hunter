@@ -4,10 +4,11 @@ import { SendNotification } from "@/components/feedback/SendNotification";
 import InsertAI from "@/features/admin/InsertAI";
 import InsertManual from "@/features/admin/InsertManual";
 import { useEffect, useState } from "react";
-import { LuPlus, LuSparkles } from "react-icons/lu";
+import { LuPlus, LuSheet, LuSparkles } from "react-icons/lu";
+import InsertSheet from "@/features/admin/IntertSheet";
 
 export default function AdminClient() {
-  const [activeTab, setActiveTab] = useState<"manual" | "bulk">("manual");
+  const [activeTab, setActiveTab] = useState<"manual" | "bulk" | "sheet">("sheet");
   const [isLoading, setIsLoading] = useState(false);
   const [status, setStatus] = useState<{
     type: "success" | "error";
@@ -51,6 +52,17 @@ export default function AdminClient() {
         >
           <LuSparkles className="h-4 w-4" /> AI Bulk Import
         </button>
+
+        <button
+          onClick={() => setActiveTab("sheet")}
+          className={`flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-semibold transition-all ${
+            activeTab === "sheet"
+              ? "bg-background text-foreground shadow-sm ring-1 ring-border"
+              : "text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          <LuSheet className="h-4 w-4" /> Sheet Insert
+        </button>
       </div>
 
       {activeTab === "manual" ? (
@@ -59,8 +71,14 @@ export default function AdminClient() {
           setIsLoading={setIsLoading}
           setStatus={setStatus}
         />
-      ) : (
+      ) : activeTab === "bulk" ? (
         <InsertAI
+          isLoading={isLoading}
+          setIsLoading={setIsLoading}
+          setStatus={setStatus}
+        />
+      ) : (
+        <InsertSheet
           isLoading={isLoading}
           setIsLoading={setIsLoading}
           setStatus={setStatus}

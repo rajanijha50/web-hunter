@@ -105,6 +105,7 @@ export const CATEGORIES = [
   "UI",
   "Video Editing",
   "Video Tools",
+  "Vibe Coding",
   "Weather",
   "Web Dev",
   "Web Scraping",
