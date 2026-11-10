@@ -2,21 +2,36 @@ import { Metadata } from "next";
 import HomeClient from "./home-client";
 
 export const metadata: Metadata = {
-  title: "Web Hunter — Discover Useful Websites",
-  keywords: ["Web Hunter", "Useful Websites", "Websites List", "AI Tools", "Productivity Tools", "Design Tools", "Marketing Tools", "SEO Tools", "Development Tools", "Learning Tools", "Entertainment Tools", "Productivity Apps"],
+  title: "Discover Useful Websites & AI Tools",
   description:
-    "Curated collection of useful websites organized by category.",
-  openGraph: {
-    title: "Web Hunter — Discover Useful Websites",
-    description:
-      "Curated collection of useful websites organized by category.",
-    url: `${process.env.NEXT_PUBLIC_SITE_URL}`,
-  },
-  icons: {
-    icon: [`${process.env.NEXT_PUBLIC_SITE_URL}/favicon.ico`],
+    "Explore 500+ handpicked websites, generative AI tools, developer utilities, and free online resources by category.",
+  alternates: {
+    canonical: "/",
   },
 };
 
 export default function Page() {
-  return <HomeClient />;
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: "Web Hunter",
+    url: "https://www.webhunter.space",
+    description:
+      "Curated directory of 500+ useful websites, AI tools, developer utilities, and resources organized across 90+ categories.",
+    potentialAction: {
+      "@type": "SearchAction",
+      target: "https://www.webhunter.space/?q={search_term_string}",
+      "query-input": "required name=search_term_string",
+    },
+  };
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <HomeClient />
+    </>
+  );
 }
