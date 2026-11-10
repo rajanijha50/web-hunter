@@ -19,7 +19,8 @@ export default function HomeClient() {
   return (
     <>
       <Header />
-      {user ? <Authenticated /> : <Anonymous />}
+      {/* {user ? <Authenticated /> : <Anonymous />} */}
+      <Authenticated />
       <Footer />
     </>
   );

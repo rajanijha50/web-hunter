@@ -23,21 +23,18 @@ export default function Footer() {
               Discovery redefined. We hunt for the websites that the algorithms
               forgot to show you.
             </p>
-            
+
           </div>
 
           <div className="flex flex-col mx-auto w-full md:max-w-1/2">
             <h5 className="font-bold mb-4 uppercase">Pages</h5>
             <div className="flex flex-col text-sm gap-2">
-              {user && (
-                <Link
-                  href="/favorites"
-                  className="capitalize hover:underline w-fit"
-                >
-                  My Favorites
-                </Link>
-              )}
-
+              <Link
+                href="/my-favorites"
+                className="capitalize hover:underline w-fit"
+              >
+                My Favorites
+              </Link>
               <Link href="/about" className="capitalize hover:underline w-fit">
                 About
               </Link>
@@ -67,4 +64,3 @@ export default function Footer() {
     </>
   );
 }
- 

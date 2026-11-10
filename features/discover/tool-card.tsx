@@ -1,11 +1,15 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { LuHeart, LuStar, LuExternalLink, LuRotateCcw } from "react-icons/lu";
+import { LuHeart, LuExternalLink, LuRotateCcw } from "react-icons/lu";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
-import { SendNotification } from "@/components/feedback/SendNotification";
-import { fetchFavorites, toggleFavorite } from "@/lib/cache/favorites";
+import {
+  fetchFavorites,
+  toggleFavorite,
+  toggleLocalFavorite,
+  getLocalFavorites,
+} from "@/lib/cache/favorites";
 import { WebsiteType } from "@/types/website";
 import { useUserStore } from "@/store/userStore";
 
@@ -16,18 +20,33 @@ interface ToolCardProps {
 
 export function ToolCard({ tool, onClick }: ToolCardProps) {
   const [imageError, setImageError] = useState(false);
-  // const [loading, setLoading] = useState(false);
   const [LikeCount, setLikeCount] = useState(tool.likesCount);
+
   const user = useUserStore((state) => state.user);
-  const { data: favorites = [], isLoading: loading } = useQuery({
+  const queryClient = useQueryClient();
+
+  // ── Anonymous: subscribe to the shared local-favorites query ─────────────────
+  // queryFn reads from localStorage. Every invalidation re-runs this across all
+  // ToolCard instances simultaneously — mirrors exactly how DB favorites work.
+  const { data: localFavIds = [] } = useQuery({
+    queryKey: ["local-favorites"],
+    queryFn: getLocalFavorites,
+    enabled: !user, // only run when logged out
+  });
+
+  // ── Logged-in: React Query fetches from DB ───────────────────────────────────
+  const { data: dbFavorites = [], isLoading: loading } = useQuery({
     queryKey: ["favorites", user?._id],
     queryFn: () => fetchFavorites(user?._id!),
     enabled: !!user?._id,
   });
-  // console.log('favs in card: ', favorites)
-  const isFavorited = favorites.some((fav: any) => fav._id === tool._id);
-  const queryClient = useQueryClient();
 
+  // Unified favorited state
+  const isFavorited = user
+    ? dbFavorites.some((fav: any) => fav._id === tool._id)
+    : localFavIds.includes(tool._id);
+
+  // ── DB mutation with optimistic update (logged-in users) ─────────────────────
   const mutation = useMutation({
     mutationFn: toggleFavorite,
     onMutate: async ({ user_id, website_id }) => {
@@ -41,11 +60,9 @@ export function ToolCard({ tool, onClick }: ToolCardProps) {
         ["favorites", user_id],
         (old = []) => {
           const exists = old.some((fav) => fav._id === website_id);
-          if (exists) {
-            return old.filter((fav) => fav._id !== website_id);
-          } else {
-            return [...old, tool];
-          }
+          return exists
+            ? old.filter((fav) => fav._id !== website_id)
+            : [...old, tool];
         },
       );
 
@@ -64,18 +81,45 @@ export function ToolCard({ tool, onClick }: ToolCardProps) {
     },
   });
 
+  // Keep LikeCount in sync when logged-in favorites update
   useEffect(() => {
-    if (isFavorited) {
-      const updatedWebsite = favorites.find((fav: any) => fav._id === tool._id);
-      setLikeCount(Math.max(updatedWebsite?.likesCount, LikeCount));
+    if (user && isFavorited) {
+      const updatedWebsite = dbFavorites.find(
+        (fav: any) => fav._id === tool._id,
+      );
+      if (updatedWebsite) {
+        setLikeCount((prev) => Math.max(updatedWebsite.likesCount, prev));
+      }
     }
-  }, [favorites]);
+  }, [dbFavorites]);
 
-  // Extract domain for favicon service
+  // ── Heart click handler ───────────────────────────────────────────────────────
+  const handleHeartClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+
+    if (user) {
+      // Logged in → persist to MongoDB via mutation
+      mutation.mutate({
+        user_id: user._id!,
+        website_id: tool._id,
+      });
+    } else {
+      // Anonymous → write to localStorage, then invalidate the shared query key.
+      // Every subscriber (every ToolCard + FavoritesClient) will re-read
+      // getLocalFavorites() and re-render with the new truth.
+      const nowFavorited = toggleLocalFavorite(tool._id);
+      queryClient.invalidateQueries({ queryKey: ["local-favorites"] });
+      // Optimistic like count update (local display only)
+      setLikeCount((prev) =>
+        nowFavorited ? prev + 1 : Math.max(0, prev - 1),
+      );
+    }
+  };
+
+  // ── Favicon ──────────────────────────────────────────────────────────────────
   const getDomain = (url: string) => {
     try {
-      const hostname = url.replace(/^(https?:\/\/)?(www\.)?/, "").split("/")[0];
-      return hostname;
+      return url.replace(/^(https?:\/\/)?(www\.)?/, "").split("/")[0];
     } catch {
       return url;
     }
@@ -83,6 +127,11 @@ export function ToolCard({ tool, onClick }: ToolCardProps) {
 
   const domain = getDomain(tool.url);
   const faviconUrl = `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
+
+  const visitUrl =
+    tool.url.startsWith("http://") || tool.url.startsWith("https://")
+      ? tool.url
+      : `https://${tool.url}`;
 
   return (
     <Card
@@ -106,42 +155,37 @@ export function ToolCard({ tool, onClick }: ToolCardProps) {
             )}
           </div>
           <div>
-            <h3 title={tool.name} className="text-xl font-bold tracking-tight text-foreground leading-tight transition-colors line-clamp-1">
+            <h3
+              title={tool.name}
+              className="text-xl font-bold tracking-tight text-foreground leading-tight transition-colors line-clamp-1"
+            >
               {tool.name}
             </h3>
           </div>
         </div>
+
+        {/* ── Heart / Like button ── */}
         <button
           className="flex flex-col justify-center items-center rounded-full p-2 text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive cursor-pointer"
-          disabled={loading}
-          title={isFavorited ? "Dislike" : "Like"}
-          onClick={(e) => {
-            e.stopPropagation();
-            if (!user) {
-              SendNotification("Please login to add favorites!", "error");
-              return;
-            }
-            mutation.mutate({
-              user_id: user?._id!,
-              website_id: tool._id,
-            });
-          }}
+          disabled={user ? loading : false}
+          title={isFavorited ? "Remove from favorites" : "Add to favorites"}
+          onClick={handleHeartClick}
         >
-          {loading ? (
+          {user && loading ? (
             <LuRotateCcw className="h-4 w-4 animate-spin" />
           ) : (
             <LuHeart
-              className={`h-4 w-4 ${isFavorited
-                ? "text-red-500 fill-red-500"
-                : "text-muted-foreground"
-                }`}
+              className={`h-4 w-4 ${
+                isFavorited
+                  ? "text-red-500 fill-red-500"
+                  : "text-muted-foreground"
+              }`}
             />
           )}
           <span
-            className={`text-sm font-bold text-center ${isFavorited
-              ? "text-red-500 fill-red-500"
-              : "text-muted-foreground"
-              }`}
+            className={`text-sm font-bold text-center ${
+              isFavorited ? "text-red-500" : "text-muted-foreground"
+            }`}
           >
             {LikeCount}
           </span>
@@ -166,37 +210,18 @@ export function ToolCard({ tool, onClick }: ToolCardProps) {
         </div>
       </div>
 
+      {/* ── Visit button — always a real link, no auth gate ── */}
       <div className="mt-auto flex items-center justify-center pt-4 border-t border-border">
-        <div className="flex items-center gap-3">
-          {user ? (
-            <a
-              className="h-9 rounded-xl px-5 text-sm font-bold bg-primary text-primary-foreground hover:opacity-90 transition-all flex items-center justify-center shadow-md hover:shadow-lg active:scale-95"
-              href={
-                tool.url.startsWith("http://") || tool.url.startsWith("https://")
-                  ? tool.url
-                  : `https://${tool.url}`
-              }
-              target="_blank"
-              onClick={(e) => e.stopPropagation()}
-            >
-              Visit
-              <LuExternalLink className="ml-2 h-3.5 w-3.5" />
-            </a>
-          ) : (
-            <button className="h-9 rounded-xl px-5 text-sm font-bold bg-primary text-primary-foreground hover:opacity-90 transition-all flex items-center justify-center shadow-md hover:shadow-lg active:scale-95"
-              onClick={(e) => {
-                e.stopPropagation();
-                if (!user) {
-                  SendNotification("Please login to visit website!", "error");
-                  return;
-                }
-              }}
-            >
-              Visit
-              <LuExternalLink className="ml-2 h-3.5 w-3.5" />
-            </button>
-          )}
-        </div>
+        <a
+          className="h-9 rounded-xl px-5 text-sm font-bold bg-primary text-primary-foreground hover:opacity-90 transition-all flex items-center justify-center shadow-md hover:shadow-lg active:scale-95"
+          href={visitUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={(e) => e.stopPropagation()}
+        >
+          Visit
+          <LuExternalLink className="ml-2 h-3.5 w-3.5" />
+        </a>
       </div>
     </Card>
   );

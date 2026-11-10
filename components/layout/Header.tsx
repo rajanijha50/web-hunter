@@ -39,15 +39,23 @@ export function Header() {
   return (
     <>
       <header
-        
+
         className={`animate-slide-in-top fixed top-0 left-0 right-0 z-50 backdrop-blur-md md:border-b transition-all text-primary dark:text-foreground`}
       >
         <div className=" flex h-16 items-center justify-between px-4 lg:px-8 mx-auto">
           {/* site logo */}
           <div role="banner" className="flex items-center gap-6">
-            <Link href="/" className="flex text-2xl md:text-3xl items-center space-x-2">
+            <Link href="/" className="hidden md:flex text-2xl md:text-3xl items-center space-x-2">
               <span className="font-bold tracking-tight">
                 Web
+                <span className="font-medium text-muted-foreground">
+                  Hunter
+                </span>
+              </span>
+            </Link>
+            <Link href="/" className="md:hidden flex text-2xl md:text-3xl items-center space-x-2">
+              <span className="font-bold tracking-tight">
+                W
                 <span className="font-medium text-muted-foreground">
                   Hunter
                 </span>
@@ -70,7 +78,7 @@ export function Header() {
             </div>
           )}
 
-          {/* nav links */}
+          {/* nav links: desktop */}
           <nav
             className={`hidden md:flex items-center gap-4 md:gap-6 text-sm font-medium`}
           >
@@ -78,7 +86,7 @@ export function Header() {
             <div className="flex items-center gap-6">
               {user ? (
                 <>
-                  <Link href={"/my-favorites"}>My Favorites</Link>
+
                   {user?.role == "admin" && (
                     <>
                       <Link href={"/admin"}>Admin</Link>
@@ -86,6 +94,7 @@ export function Header() {
                   )}
                   {/* light and dark mode toggle */}
                   <ThemeToggle />
+                  <Link href={"/my-favorites"}>My Favorites</Link>
                   <div className="flex items-center gap-3">
                     <div className="h-9 w-9 rounded-full border border-border overflow-hidden bg-muted flex items-center justify-center shrink-0 cursor-pointer hover:border-primary/50 transition-colors">
                       {user?.image ? (
@@ -114,12 +123,13 @@ export function Header() {
               ) : (
                 <>
                   <ThemeToggle />
+                  <Link href={"/my-favorites"}>My Favorites</Link>
                   <Link href="/auth">
                     <Button
                       size="sm"
                       className="rounded-full px-4 font-semibold shadow-sm"
                     >
-                      Get Started
+                      Login
                     </Button>
                   </Link>
                 </>
@@ -127,6 +137,7 @@ export function Header() {
             </div>
           </nav>
 
+          {/* mobile menu button toggle */}
           <div className="flex md:hidden items-center gap-3">
             <Button
               variant="ghost"
@@ -149,30 +160,31 @@ export function Header() {
                 )}
               </Button>
             ) : (
-              <Link href="/auth">
-                <Button
-                  size="sm"
-                  className="rounded-full px-4 font-semibold shadow-sm"
-                >
-                  Get Started
-                </Button>
-              </Link>
+              <>
+                <Link href={"/my-favorites"}>My Favorites</Link>
+                <Link href="/auth">
+                  <Button
+                    size="sm"
+                    className="rounded-full px-4 font-semibold shadow-sm"
+                  >
+                    Login
+                  </Button>
+                </Link>
+              </>
             )}
           </div>
         </div>
 
+        {/* mobile menu */}
         <nav
-          className={`md:hidden overflow-hidden ${
-            mobileMenu ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
-          }`}
+          className={`md:hidden overflow-hidden ${mobileMenu ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
+            }`}
         >
           <div className="flex flex-col items-center px-6 pt-2 gap-5 pb-6 backdrop-blur-lg border-t border-border">
             {user && (
               <>
                 {user?.role == "admin" && (
                   <>
-                    <Link href={"/my-favorites"}>My Favorites</Link>
-
                     <Link href={"/admin"}>Admin</Link>
                   </>
                 )}
@@ -204,6 +216,8 @@ export function Header() {
             )}
           </div>
         </nav>
+
+
       </header>
       <div className="h-16"></div>
       {openSearchWindow && (

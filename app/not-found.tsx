@@ -10,7 +10,7 @@ import { motion } from "framer-motion";
 export default function NotFound() {
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col selection:bg-primary/20">
-      <Header />
+      {/* <Header /> */}
 
       <main className="flex-grow flex flex-col items-center justify-center relative px-4 py-20 overflow-hidden">
         {/* Background Gradient Orbs */}
@@ -42,18 +42,11 @@ export default function NotFound() {
                 Return Home
               </Button>
             </Link>
-            
-            <Link href="/about">
-              <Button size="lg" variant="outline" className="rounded-full flex gap-2 font-bold w-full sm:w-auto h-12 px-8">
-                <LuSearch className="h-5 w-5" />
-                About Web Hunter
-              </Button>
-            </Link>
           </div>
         </motion.div>
       </main>
 
-      <Footer />
+      {/* <Footer /> */}
     </div>
   );
 }

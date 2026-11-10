@@ -4,31 +4,49 @@ import { Header } from "@/components/layout/Header";
 import { ToolCard } from "@/features/discover/tool-card";
 import { useUserStore } from "@/store/userStore";
 import { useQuery } from "@tanstack/react-query";
-import { fetchFavorites } from "@/lib/cache/favorites";
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { SendNotification } from "@/components/feedback/SendNotification";
+import { fetchFavorites, getLocalFavorites } from "@/lib/cache/favorites";
+import { useEffect, useMemo, useState } from "react";
 import { LuSearch } from "react-icons/lu";
 import SearchWebsite from "@/features/search/SearchWebsite";
+import { useWebsiteStore } from "@/store/websiteStore";
+import { WebsiteType } from "@/types/website";
 
 export default function FavoritesClient() {
   const { user } = useUserStore();
-  const router = useRouter();
+  const { websites, fetchWebsites, loading: websitesLoading } = useWebsiteStore();
 
   const [openSearchWindow, setOpenSearchWindow] = useState(false);
 
-  const { data: favorites = [], isLoading } = useQuery({
+  // 1. Ensure websites are fetched if arriving directly to /my-favorites
+  useEffect(() => {
+    if (websites.length === 0) {
+      fetchWebsites();
+    }
+  }, [websites.length, fetchWebsites]);
+
+  // 2. Anonymous: subscribe to local-favorites query key for reactive syncing
+  const { data: localFavIds = [] } = useQuery({
+    queryKey: ["local-favorites"],
+    queryFn: getLocalFavorites,
+    enabled: !user,
+  });
+
+  // 3. Logged-in: fetch from DB via React Query
+  const { data: dbFavorites = [], isLoading: dbLoading } = useQuery({
     queryKey: ["favorites", user?._id],
     queryFn: () => fetchFavorites(user?._id!),
     enabled: !!user?._id,
   });
 
-  useEffect(() => {
-    if (!user) {
-      SendNotification("Please login to access your favorites!", "error");
-      router.push("/auth?redirect=/my-favorites");
-    }
-  }, [user]);
+  // 4. Derive local favorites reactively whenever localFavIds or websites change
+  const localFavorites = useMemo(() => {
+    if (user || websites.length === 0) return [];
+    return websites.filter((w) => localFavIds.includes(w._id));
+  }, [user, websites, localFavIds]);
+
+  // Unified list
+  const favorites: WebsiteType[] = user ? dbFavorites : localFavorites;
+  const isLoading = user ? dbLoading : websitesLoading;
 
   return (
     <>
@@ -52,14 +70,14 @@ export default function FavoritesClient() {
               />
             </div>
             <div className="flex flex-wrap justify-center items-center gap-5">
-              {favorites.map((fav: any, idx: number) => (
-                <ToolCard key={idx} tool={fav} />
+              {favorites.map((fav: any) => (
+                <ToolCard key={fav._id} tool={fav} />
               ))}
             </div>
           </div>
         ) : (
           <div className="flex justify-center items-center h-64">
-            <p className="text-muted-foreground">No favorites found</p>
+            <p className="text-muted-foreground">No favorites found!</p>
           </div>
         )}
       </div>

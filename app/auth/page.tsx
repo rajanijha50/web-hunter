@@ -4,8 +4,7 @@ import { signIn, useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { motion } from "framer-motion";
-import { LuChrome, LuSearch, LuShieldCheck } from "react-icons/lu";
-import { useUserStore } from "@/store/userStore";
+import { LuShieldCheck } from "react-icons/lu";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
@@ -58,15 +57,6 @@ export default function LoginPage() {
             >
               <Image src="/assets/icons/google.svg" alt="google" width={24} height={24} />
               Continue with Google
-            </Button>
-
-            <Button
-              variant="outline"
-              onClick={() => handleSignIn("azure-ad")}
-              className="w-full h-12 bg-white/5 hover:bg-white/10 border-white/10 text-white transition-all duration-300 flex items-center justify-center gap-3 text-base"
-            >
-              <Image src="/assets/icons/microsoft.svg" alt="microsoft" width={25} height={25} />
-              Continue with Microsoft
             </Button>
 
             <div className="pt-6 text-center">
